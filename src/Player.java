@@ -20,14 +20,18 @@ public class Player implements Runnable {
     private void setup() throws IOException {
         input = new Scanner(socket.getInputStream());
         output = new PrintWriter(socket.getOutputStream(), true);
-        output.println("Player colour " + (isWhite ? "white" : "black" ) + " has joined.");
+        output.println(isWhite ? "w" : "b");
         if (isWhite) {
             chess.setCurrentPlayer(this);
-            output.println("Waiting for other client...");
+            output.println("MSG Waiting for other client...");
         } else {
             opponent = chess.getCurrentPlayer();
             opponent.opponent = this;
-            opponent.output.println("Your move.");
+            opponent.output.println(chess);
+            output.println(chess);
+            output.println("MSG White starts first.");
+            opponent.output.println("MSG White starts first.");
+            opponent.output.println("INIT");
         }
     }
 
@@ -53,11 +57,11 @@ public class Player implements Runnable {
     private void processMove(int origX, int origY, int destX, int destY) {
         try {
             chess.movePiece(origX, origY, destX, destY, this);
-            output.println("Valid move");
-            opponent.output.println("Opponent moved " + origX + "," + origY + " to " + destY + "," + destX);
+            output.println("VM"); // Valid move
+            opponent.output.println("OPM " + origX + "," + origY + " to " + destY + "," + destX + chess);
             if (chess.getWinner() == this) {
-                output.println("Victory");
-                opponent.output.println("Defeat");
+                output.println("VCT"); // Victory
+                opponent.output.println("DFT"); // Defeat
             }
         } catch (IllegalStateException e) {
             output.println(e.getMessage());
@@ -67,14 +71,16 @@ public class Player implements Runnable {
     private void processEvents() {
         while (input.hasNextLine()) {
             String event = input.nextLine();
-            if (event.equals("Quit game")) {
+            if (event.equals("QUIT")) {
                 return;
-            } else if (event.equals("Move piece")) { // Move piece x,y to x,y
-                int origX = Character.getNumericValue(event.charAt(11));
-                int origY = Character.getNumericValue(event.charAt(13));
-                int destX = Character.getNumericValue(event.charAt(18));
-                int destY = Character.getNumericValue(event.charAt(20));
+            } else if (event.startsWith("VM")) { // VM x,y to x,y
+                int origX = Character.getNumericValue(event.charAt(3));
+                int origY = Character.getNumericValue(event.charAt(5));
+                int destX = Character.getNumericValue(event.charAt(10));
+                int destY = Character.getNumericValue(event.charAt(12));
                 processMove(origX, origY, destX, destY);
+                output.println(chess);
+                opponent.output.println(chess);
             }
         }
     }
@@ -82,6 +88,4 @@ public class Player implements Runnable {
     public String toString() {
         return isWhite ? "white" : "black";
     }
-
-
 }

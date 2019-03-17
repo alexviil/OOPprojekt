@@ -3,7 +3,7 @@ public class Chess {
     private char[][] gamefield;
 
     public Chess() {
-        char[][] gamefield = new char[][]{
+        gamefield = new char[][]{
                 {'R', 'K', 'B', 'Q', 'C', 'B', 'K', 'R'}, // R - Rook, K - Knight, B - Bishop, Q - Queen, C - King,
                 {'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'}, // P - Pawn.
                 {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '}, // Uppercase - black, lowercase - white.
@@ -47,7 +47,7 @@ public class Chess {
         return currentPlayer;
     }
 
-    public String toString() {
+    public String toString() { // Has to be a String without line separators
         /* example
         +    A   B   C   D   E   F   G   H    +
            ---------------------------------
@@ -69,6 +69,15 @@ public class Chess {
            ---------------------------------
         +    A   B   C   D   E   F   G   H    +
          */
-        return "i am not null";
+        StringBuilder sb = new StringBuilder();
+        sb.append("GM ");
+        for (char[] chars : gamefield) {
+            for (char aChar : chars) {
+                sb.append(" " + aChar + " ");
+            }
+            sb.append("&");
+        }
+
+        return sb.toString();
     }
 }

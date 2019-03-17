@@ -5,9 +5,9 @@ import java.util.concurrent.Executors;
 public class Server {
     public static void main(String[] args) throws Exception{
         try (ServerSocket listener = new ServerSocket(59059)) {
-            ExecutorService threadPool = Executors.newFixedThreadPool(200);
+            ExecutorService threadPool = Executors.newFixedThreadPool(99999);
+            Chess chess = new Chess();
             while (true) {
-                Chess chess = new Chess();
                 threadPool.execute(new Player(true, listener.accept(), chess));
                 threadPool.execute(new Player(false, listener.accept(), chess));
             }
