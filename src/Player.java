@@ -58,7 +58,7 @@ public class Player implements Runnable {
         try {
             chess.movePiece(origX, origY, destX, destY, this);
             output.println("VM"); // Valid move
-            opponent.output.println("OPM " + origX + "," + origY + " to " + destY + "," + destX + chess);
+            opponent.output.println("OPM " + origX + "," + origY + " to " + destX + "," + destY + chess);
             if (chess.getWinner() == this) {
                 output.println("VCT"); // Victory
                 opponent.output.println("DFT"); // Defeat

@@ -1,17 +1,18 @@
 public class Chess {
     Player currentPlayer;
-    private char[][] gamefield;
+    private Board gamefield;
 
     public Chess() {
-        gamefield = new char[][]{
-                {'R', 'K', 'B', 'Q', 'C', 'B', 'K', 'R'}, // R - Rook, K - Knight, B - Bishop, Q - Queen, C - King,
-                {'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'}, // P - Pawn.
-                {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '}, // Uppercase - black, lowercase - white.
-                {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-                {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-                {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-                {'p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'},
-                {'r', 'k', 'b', 'q', 'c', 'b', 'k', 'r'}};
+//        gamefield = new char[][]{
+//                {'R', 'K', 'B', 'Q', 'C', 'B', 'K', 'R'}, // R - Rook, K - Knight, B - Bishop, Q - Queen, C - King,
+//                {'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'}, // P - Pawn.
+//                {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '}, // Uppercase - black, lowercase - white.
+//                {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+//                {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+//                {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+//                {'p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'},
+//                {'r', 'k', 'b', 'q', 'c', 'b', 'k', 'r'}};
+        gamefield = new Board();
     }
 
     public Player getWinner() {
@@ -29,11 +30,11 @@ public class Chess {
             throw new IllegalStateException("Not your turn yet.");
         } else if (player.opponent == null) {
             throw new IllegalStateException("Still waiting for an opponent...");
-        } else if (false) { // TODO function that checks move legality
+        } else if (gamefield.getBoard()[origX][origY].getCurrentPiece().checkMoveLegality(destX, destY, gamefield)) { // TODO function that checks move legality
             throw new IllegalStateException("Illegal move...");
         }
-        gamefield[destX][destY] = gamefield[origX][origY];
-        gamefield[origX][origY] = ' ';
+        gamefield.getBoard()[destX][destY].setCurrentPiece(gamefield.getBoard()[origX][origY].getCurrentPiece());
+        gamefield.getBoard()[origX][origY].setCurrentPiece(null);
         currentPlayer = currentPlayer.opponent;
     }
 
@@ -69,15 +70,6 @@ public class Chess {
            ---------------------------------
         +    A   B   C   D   E   F   G   H    +
          */
-        StringBuilder sb = new StringBuilder();
-        sb.append("GM ");
-        for (char[] chars : gamefield) {
-            for (char aChar : chars) {
-                sb.append(" " + aChar + " ");
-            }
-            sb.append("&");
-        }
-
-        return sb.toString();
+        return gamefield.toString();
     }
 }
