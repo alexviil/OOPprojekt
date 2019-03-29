@@ -30,7 +30,8 @@ public class Chess {
             throw new IllegalStateException("Not your turn yet.");
         } else if (player.opponent == null) {
             throw new IllegalStateException("Still waiting for an opponent...");
-        } else if (gamefield.getBoard()[origX][origY].getCurrentPiece().checkMoveLegality(destX, destY, gamefield)) { // TODO function that checks move legality
+        } else if (!gamefield.getBoard()[origX][origY].getCurrentPiece().checkMoveLegality(destX, destY, gamefield)) { // TODO function that checks move legality
+            System.out.println("test");
             throw new IllegalStateException("Illegal move...");
         }
         gamefield.getBoard()[destX][destY].setCurrentPiece(gamefield.getBoard()[origX][origY].getCurrentPiece());

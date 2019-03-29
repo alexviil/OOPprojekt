@@ -17,8 +17,11 @@ public class Tile {
         return currentPiece;
     }
 
-    public void setCurrentPiece(Piece currentPiece) {
-        this.currentPiece = currentPiece;
+    public void setCurrentPiece(Piece cp) {
+        this.currentPiece = cp;
+        if (cp!=null) {
+            currentPiece.setPos(this.pos);
+        }
     }
 
     public int[] getPos() {

@@ -13,8 +13,14 @@ public abstract class Piece {
     }
 
     public boolean checkMoveLegality(int xEnd, int yEnd, Board board) {
-        int[] position = {xEnd, yEnd};
-        return this.allPossibleMoves(board).contains(position);
+        boolean legal = false;
+        for (int[] el:this.allPossibleMoves(board)) {
+            if (Arrays.equals(el, new int[]{xEnd, yEnd})) {
+                legal = true;
+                break;
+            }
+        }
+        return legal;
     }
 
     public abstract ArrayList<int[]> allPossibleMoves(Board board);

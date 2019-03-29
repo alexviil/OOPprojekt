@@ -16,7 +16,7 @@ public class Board {
 
         this.board = new Tile[][]{
                 {createRookTile(0,0,0), createKnightTile(0, 0, 1), createBishopTile(0, 0, 2), createQueenTile(0, 0, 3), createKingTile(0, 0, 4), createBishopTile(0, 0, 5), createKnightTile(0, 0, 6), createRookTile(0, 0, 7)},
-                {createPawnTile(0, 1, 0), createPawnTile(0, 1, 1), createPawnTile(0, 1, 2), createPawnTile(0, 1, 3), createPawnTile(0, 1, 4), createPawnTile(0, 1, 5), createPawnTile(0, 1, 6), createPawnTile(0, 1, 7)},
+                {createPawnTile(0,1, 0), createPawnTile(0, 1, 1), createPawnTile(0, 1, 2), createPawnTile(0, 1, 3), createPawnTile(0, 1, 4), createPawnTile(0, 1, 5), createPawnTile(0, 1, 6), createPawnTile(0, 1, 7)},
                 {createEmptyTile(2, 0), createEmptyTile(2, 1), createEmptyTile(2, 2), createEmptyTile(2, 3), createEmptyTile(2, 4), createEmptyTile(2, 5), createEmptyTile(2, 6), createEmptyTile(2, 7)},
                 {createEmptyTile(3, 0), createEmptyTile(3, 1), createEmptyTile(3, 2), createEmptyTile(3, 3), createEmptyTile(3, 4), createEmptyTile(3, 5), createEmptyTile(3, 6), createEmptyTile(3, 7)},
                 {createEmptyTile(4, 0), createEmptyTile(4, 1), createEmptyTile(4, 2), createEmptyTile(4, 3), createEmptyTile(4, 4), createEmptyTile(4, 5), createEmptyTile(4, 6), createEmptyTile(4, 7)},

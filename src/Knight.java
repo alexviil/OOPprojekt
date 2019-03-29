@@ -7,7 +7,10 @@ public class Knight extends Piece {
 
     @Override
     public ArrayList<int[]> allPossibleMoves(Board board) {
-        return new ArrayList<>();
+        ArrayList<int[]> possibleMoves = new ArrayList<>();
+        int[] position = this.getPos();
+
+        return possibleMoves;
     }
 
     @Override
