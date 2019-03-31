@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.Arrays;
 
 public class Board {
@@ -21,8 +22,64 @@ public class Board {
                 {createEmptyTile(3, 0), createEmptyTile(3, 1), createEmptyTile(3, 2), createEmptyTile(3, 3), createEmptyTile(3, 4), createEmptyTile(3, 5), createEmptyTile(3, 6), createEmptyTile(3, 7)},
                 {createEmptyTile(4, 0), createEmptyTile(4, 1), createEmptyTile(4, 2), createEmptyTile(4, 3), createEmptyTile(4, 4), createEmptyTile(4, 5), createEmptyTile(4, 6), createEmptyTile(4, 7)},
                 {createEmptyTile(5, 0), createEmptyTile(5, 1), createEmptyTile(5, 2), createEmptyTile(5, 3), createEmptyTile(5, 4), createEmptyTile(5, 5), createEmptyTile(5, 6), createEmptyTile(5, 7)},
-                {createPawnTile(1, 6, 0), createPawnTile(1, 6, 1), createPawnTile(1,6, 2), createEmptyTile(6, 3), createPawnTile(1, 6, 4), createPawnTile(1, 6, 5), createPawnTile(1, 6, 6), createPawnTile(1, 6, 7)},
+                {createPawnTile(1, 6, 0), createPawnTile(1, 6, 1), createPawnTile(1,6, 2), createPawnTile(1,6, 3), createPawnTile(1, 6, 4), createPawnTile(1, 6, 5), createPawnTile(1, 6, 6), createPawnTile(1, 6, 7)},
                 {createRookTile(1, 7, 0), createKnightTile(1, 7, 1), createBishopTile(1, 7, 2), createQueenTile(1, 7, 3), createKingTile(1, 7, 4), createBishopTile(1, 7, 5), createKnightTile(1, 7, 6), createRookTile(1, 7, 7)}};
+    }
+
+    public ArrayList<int[]> everyWhiteAllMoves() {
+        ArrayList<int[]> allMoves = new ArrayList<>();
+        for (Tile[] tarr:this.board) {
+            for (Tile t:tarr) {
+                if (t.getCurrentPiece()!=null && t.getCurrentPiece().getColor()==1) {
+                    allMoves.addAll(t.getCurrentPiece().allPossibleMoves(this));
+                }
+            }
+        }
+        return allMoves;
+    }
+
+    public ArrayList<int[]> everyBlackAllMoves() {
+        ArrayList<int[]> allMoves = new ArrayList<>();
+        for (Tile[] tarr:this.board) {
+            for (Tile t:tarr) {
+                if (t.getCurrentPiece()!=null && t.getCurrentPiece().getColor()==0) {
+                    allMoves.addAll(t.getCurrentPiece().allPossibleMoves(this));
+                }
+            }
+        }
+        return allMoves;
+    }
+
+    public int[] findWhiteKing() {
+        int x = -1;
+        int y = -1;
+
+        for (Tile[] tarr:this.board) {
+            for (Tile t : tarr) {
+                if (t.getCurrentPiece() instanceof King && t.getCurrentPiece().getColor()==1) {
+                    x=t.getCurrentPiece().getPos()[0];
+                    y=t.getCurrentPiece().getPos()[1];
+                }
+            }
+        }
+
+        return new int[]{x, y};
+    }
+
+    public int[] findBlackKing() {
+        int x = -1;
+        int y = -1;
+
+        for (Tile[] tarr:this.board) {
+            for (Tile t : tarr) {
+                if (t.getCurrentPiece() instanceof King && t.getCurrentPiece().getColor()==0) {
+                    x=t.getCurrentPiece().getPos()[0];
+                    y=t.getCurrentPiece().getPos()[1];
+                }
+            }
+        }
+
+        return new int[]{x, y};
     }
 
     public Tile[][] getBoard() {
