@@ -1,3 +1,4 @@
+import java.io.Console;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
@@ -56,12 +57,17 @@ public class Player implements Runnable {
 
     private void processMove(int origX, int origY, int destX, int destY) {
         try {
-            chess.movePiece(origX, origY, destX, destY, this);
-            output.println("VM"); // Valid move
-            opponent.output.println("OPM " + origX + "," + origY + " to " + destX + "," + destY + chess);
-            if (chess.getWinner() == this) {
-                output.println("VCT"); // Victory
-                opponent.output.println("DFT"); // Defeat
+            if (chess.movePiece(origX, origY, destX, destY, this)) {
+                output.println(chess);
+                opponent.output.println(chess);
+                output.println("VM"); // Valid move
+                opponent.output.println("OPM " + origX + "," + origY + " to " + destX + "," + destY + chess);
+                if (chess.getWinner() == this) {
+                    output.println("VCT"); // Victory
+                    opponent.output.println("DFT"); // Defeat
+                }
+            } else {
+                output.println("IM"); // Invalid/Illegal move
             }
         } catch (IllegalStateException e) {
             output.println(e.getMessage());
@@ -74,13 +80,23 @@ public class Player implements Runnable {
             if (event.equals("QUIT")) {
                 return;
             } else if (event.startsWith("VM")) { // VM x,y to x,y
-                int origX = Character.getNumericValue(event.charAt(3));
-                int origY = Character.getNumericValue(event.charAt(5));
-                int destX = Character.getNumericValue(event.charAt(10));
-                int destY = Character.getNumericValue(event.charAt(12));
-                processMove(origX, origY, destX, destY);
+                try {
+                    int origX = Character.getNumericValue(event.charAt(3));
+                    int origY = Character.getNumericValue(event.charAt(5));
+                    int destX = Character.getNumericValue(event.charAt(10));
+                    int destY = Character.getNumericValue(event.charAt(12));
+                    processMove(origX, origY, destX, destY);
+                } catch (ArrayIndexOutOfBoundsException e) {
+                    output.println("OB"); // Out of bounds
+                }
+            } else if (event.startsWith("MSG")) {
+                opponent.output.println("PMSGR" + event.substring(4)); // Player Message Received
+                output.println("PMSGS" + event.substring(4)); // Player Message Sent
+            } else if (event.startsWith("GM")) {
                 output.println(chess);
-                opponent.output.println(chess);
+                output.println("INIT");
+            } else {
+                output.println("UC"); // Unrecognized command
             }
         }
     }

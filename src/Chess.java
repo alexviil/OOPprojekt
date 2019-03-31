@@ -25,18 +25,16 @@ public class Chess {
         return null;
     }
 
-    public synchronized void movePiece(int origX, int origY, int destX, int destY, Player player) {
-        if (player != currentPlayer) {
-            throw new IllegalStateException("Not your turn yet.");
-        } else if (player.opponent == null) {
-            throw new IllegalStateException("Still waiting for an opponent...");
-        } else if (!gamefield.getBoard()[origX][origY].getCurrentPiece().checkMoveLegality(destX, destY, gamefield)) { // TODO function that checks move legality
+    public synchronized boolean movePiece(int origX, int origY, int destX, int destY, Player player) {
+        if (!gamefield.getBoard()[origX][origY].getCurrentPiece().checkMoveLegality(destX, destY, gamefield)) { // TODO function that checks move legality
             System.out.println("test");
-            throw new IllegalStateException("Illegal move...");
+            return false;
+        } else {
+            gamefield.getBoard()[destX][destY].setCurrentPiece(gamefield.getBoard()[origX][origY].getCurrentPiece());
+            gamefield.getBoard()[origX][origY].setCurrentPiece(null);
+            currentPlayer = currentPlayer.opponent;
+            return true;
         }
-        gamefield.getBoard()[destX][destY].setCurrentPiece(gamefield.getBoard()[origX][origY].getCurrentPiece());
-        gamefield.getBoard()[origX][origY].setCurrentPiece(null);
-        currentPlayer = currentPlayer.opponent;
     }
 
     // probably more necessary methods
