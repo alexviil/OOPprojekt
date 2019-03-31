@@ -15,67 +15,84 @@ public abstract class Piece {
 
     public boolean checkMoveLegality(int xEnd, int yEnd, Board board) {
         boolean legal = false;
-        ArrayList<int[]> allEnemyMoves;
-        int[] kingPos;
 
-        if (this.color==1) {
-            allEnemyMoves = board.everyBlackAllMoves();
-            kingPos = board.findWhiteKing();
-        } else {
-            allEnemyMoves = board.everyWhiteAllMoves();
-            kingPos = board.findBlackKing();
-        }
-
-        for (int[] el:this.allPossibleMoves(board)) { // checks if move is otherwise possible for that piece
+        for (int[] el:this.allPossibleMoves(board.getBoard())) { // checks if move is otherwise possible for that piece
             if (Arrays.equals(el, new int[]{xEnd, yEnd})) {
                 legal = true;
                 break;
             }
         }
+
+        if (legal) {
+            System.out.println("Move was otherwise legal!");
+            ArrayList<int[]> allEnemyMoves;
+            int[] kingPos;
+
+            // Creates a copy of the board with the potential new movement and then checks if that move keeps the king from getting checked.
+            Tile[][] boardCopy = board.boardCopy();
+            boardCopy[xEnd][yEnd].setCurrentPiece(boardCopy[this.pos[0]][this.pos[1]].getCurrentPiece());
+            boardCopy[this.pos[0]][this.pos[1]].setCurrentPiece(null);
+
+            if (this.color == 1) {
+                allEnemyMoves = board.everyBlackAllMoves(boardCopy);
+                kingPos = board.findWhiteKing(boardCopy);
+            } else {
+                allEnemyMoves = board.everyWhiteAllMoves(boardCopy);
+                kingPos = board.findBlackKing(boardCopy);
+            }
+
+            for (int[] el : allEnemyMoves) { // checks if any enemy piece is attacking the king piece
+                if (Arrays.equals(el, kingPos)) {
+                    legal = false;
+                    System.out.println("Move keeps or puts the king in danger!");
+                    break;
+                }
+            }
+        }
         return legal;
     }
 
-    public abstract ArrayList<int[]> allPossibleMoves(Board board);
+    public abstract ArrayList<int[]> allPossibleMoves(Tile[][] board);
 
-    public ArrayList<int[]> allStraightLineMoves(Board board) {
+    public ArrayList<int[]> allStraightLineMoves(Tile[][] board) {
         ArrayList<int[]> possibleMoves = new ArrayList<>();
         int[] position = this.getPos();
 
         int i=1;
-        while (position[0]+i<=7 && (board.getBoard()[position[0]+i][position[1]].getCurrentPiece()==null ||
-                board.getBoard()[position[0]+i][position[1]].getCurrentPiece().getColor()!=this.getColor())) {
+        while (position[0]+i<=7 && (board[position[0]+i][position[1]].getCurrentPiece()==null ||
+                board[position[0]+i][position[1]].getCurrentPiece().getColor()!=this.getColor())) {
             possibleMoves.add(new int[]{position[0]+i, position[1]});
-            if (board.getBoard()[position[0]+i][position[1]].getCurrentPiece()!=null && board.getBoard()[position[0]+i][position[1]].getCurrentPiece().getColor()!=this.getColor()) {
+            if (board[position[0]+i][position[1]].getCurrentPiece()!=null && board[position[0]+i][position[1]].getCurrentPiece().getColor()!=this.getColor()) {
                 break;
             }
             i+=1;
         }
 
         i=1;
-        while (position[0]-i>=0 && (board.getBoard()[position[0]-i][position[1]].getCurrentPiece()==null ||
-                board.getBoard()[position[0]-i][position[1]].getCurrentPiece().getColor()!=this.getColor())) {
+        while (position[0]-i>=0 && (board[position[0]-i][position[1]].getCurrentPiece()==null ||
+                board[position[0]-i][position[1]].getCurrentPiece().getColor()!=this.getColor())) {
             possibleMoves.add(new int[]{position[0]-i, position[1]});
-            if (board.getBoard()[position[0]-i][position[1]].getCurrentPiece()!=null && board.getBoard()[position[0]-i][position[1]].getCurrentPiece().getColor()!=this.getColor()) {
+            if (board[position[0]-i][position[1]].getCurrentPiece()!=null && board[position[0]-i][position[1]].getCurrentPiece().getColor()!=this.getColor()) {
                 break;
             }
             i+=1;
         }
 
         i=1;
-        while (position[1]+i<=7 && (board.getBoard()[position[0]][position[1]+i].getCurrentPiece()==null ||
-                board.getBoard()[position[0]][position[1]+i].getCurrentPiece().getColor()!=this.getColor())) {
+        while (position[1]+i<=7 && (board[position[0]][position[1]+i].getCurrentPiece()==null ||
+                board[position[0]][position[1]+i].getCurrentPiece().getColor()!=this.getColor())) {
             possibleMoves.add(new int[]{position[0], position[1]+i});
-            if (board.getBoard()[position[0]][position[1]+i].getCurrentPiece()!=null && board.getBoard()[position[0]][position[1]+i].getCurrentPiece().getColor()!=this.getColor()) {
+            if (board[position[0]][position[1]+i].getCurrentPiece()!=null && board[position[0]][position[1]+i].getCurrentPiece().getColor()!=this.getColor()) {
                 break;
             }
             i+=1;
         }
 
         i=1;
-        while (position[1]-i>=0 && (board.getBoard()[position[0]][position[1]-i].getCurrentPiece()==null ||
-                board.getBoard()[position[0]][position[1]-i].getCurrentPiece().getColor()!=this.getColor())) {
+        while (position[1]-i>=0 && (board[position[0]][position[1]-i].getCurrentPiece()==null ||
+                board[position[0]][position[1]-i].getCurrentPiece().getColor()!=this.getColor())) {
             possibleMoves.add(new int[]{position[0], position[1]-i});
-            if (board.getBoard()[position[0]][position[1]-i].getCurrentPiece()!=null && board.getBoard()[position[0]][position[1]-i].getCurrentPiece().getColor()!=this.getColor()) {
+            if (board[position[0]][position[1]-i].getCurrentPiece()!=null && board[position[0]][position[1]-i].getCurrentPiece().getColor()!=this.getColor()) {
                 break;
             }
             i+=1;
@@ -84,16 +101,16 @@ public abstract class Piece {
         return possibleMoves;
     }
 
-    public ArrayList<int[]> allDiagonalLineMoves(Board board) {
+    public ArrayList<int[]> allDiagonalLineMoves(Tile[][] board) {
         ArrayList<int[]> possibleMoves = new ArrayList<>();
         int[] position = this.getPos();
 
         int i=1;
         while (position[0]+i<=7 && position[1]+i<=7 &&
-                (board.getBoard()[position[0]+i][position[1]+i].getCurrentPiece()==null ||
-                        board.getBoard()[position[0]+i][position[1]+i].getCurrentPiece().getColor()!=this.getColor())) {
+                (board[position[0]+i][position[1]+i].getCurrentPiece()==null ||
+                        board[position[0]+i][position[1]+i].getCurrentPiece().getColor()!=this.getColor())) {
             possibleMoves.add(new int[]{position[0]+i, position[1]+i});
-            if (board.getBoard()[position[0]+i][position[1]+i].getCurrentPiece()!=null && board.getBoard()[position[0]+i][position[1]+i].getCurrentPiece().getColor()!=this.getColor()) {
+            if (board[position[0]+i][position[1]+i].getCurrentPiece()!=null && board[position[0]+i][position[1]+i].getCurrentPiece().getColor()!=this.getColor()) {
                 break;
             }
             i+=1;
@@ -101,10 +118,10 @@ public abstract class Piece {
 
         i=1;
         while (position[0]-i>=0 && position[1]-i>=0 &&
-                (board.getBoard()[position[0]-i][position[1]-i].getCurrentPiece()==null ||
-                        board.getBoard()[position[0]-i][position[1]-i].getCurrentPiece().getColor()!=this.getColor())) {
+                (board[position[0]-i][position[1]-i].getCurrentPiece()==null ||
+                        board[position[0]-i][position[1]-i].getCurrentPiece().getColor()!=this.getColor())) {
             possibleMoves.add(new int[]{position[0]-i, position[1]-i});
-            if (board.getBoard()[position[0]-i][position[1]-i].getCurrentPiece()!=null && board.getBoard()[position[0]-i][position[1]-i].getCurrentPiece().getColor()!=this.getColor()) {
+            if (board[position[0]-i][position[1]-i].getCurrentPiece()!=null && board[position[0]-i][position[1]-i].getCurrentPiece().getColor()!=this.getColor()) {
                 break;
             }
             i+=1;
@@ -112,10 +129,10 @@ public abstract class Piece {
 
         i=1;
         while (position[0]-i>=0 && position[1]+i<=7 &&
-                (board.getBoard()[position[0]-i][position[1]+i].getCurrentPiece()==null ||
-                        board.getBoard()[position[0]-i][position[1]+i].getCurrentPiece().getColor()!=this.getColor())) {
+                (board[position[0]-i][position[1]+i].getCurrentPiece()==null ||
+                        board[position[0]-i][position[1]+i].getCurrentPiece().getColor()!=this.getColor())) {
             possibleMoves.add(new int[]{position[0]-i, position[1]+i});
-            if (board.getBoard()[position[0]-i][position[1]+i].getCurrentPiece()!=null && board.getBoard()[position[0]-i][position[1]+i].getCurrentPiece().getColor()!=this.getColor()) {
+            if (board[position[0]-i][position[1]+i].getCurrentPiece()!=null && board[position[0]-i][position[1]+i].getCurrentPiece().getColor()!=this.getColor()) {
                 break;
             }
             i+=1;
@@ -123,10 +140,10 @@ public abstract class Piece {
 
         i=1;
         while (position[0]+i<=7 && position[1]-i>=0 &&
-                (board.getBoard()[position[0]+i][position[1]-i].getCurrentPiece()==null ||
-                        board.getBoard()[position[0]+i][position[1]-i].getCurrentPiece().getColor()!=this.getColor())) {
+                (board[position[0]+i][position[1]-i].getCurrentPiece()==null ||
+                        board[position[0]+i][position[1]-i].getCurrentPiece().getColor()!=this.getColor())) {
             possibleMoves.add(new int[]{position[0]+i, position[1]-i});
-            if (board.getBoard()[position[0]+i][position[1]-i].getCurrentPiece()!=null && board.getBoard()[position[0]+i][position[1]-i].getCurrentPiece().getColor()!=this.getColor()) {
+            if (board[position[0]+i][position[1]-i].getCurrentPiece()!=null && board[position[0]+i][position[1]-i].getCurrentPiece().getColor()!=this.getColor()) {
                 break;
             }
             i+=1;

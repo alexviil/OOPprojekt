@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+
 public class Chess {
     Player currentPlayer;
     private Board gamefield;
@@ -16,6 +18,7 @@ public class Chess {
     }
 
     public Player getWinner() {
+        // TODO: winning and tie
         if (false) { // Checkmate condition in favour of White
             // return Player White
         } else if (false) {  // Checkmate in favour of Black
@@ -26,19 +29,108 @@ public class Chess {
     }
 
     public synchronized boolean movePiece(int origX, int origY, int destX, int destY, Player player) {
-        if (!gamefield.getBoard()[origX][origY].getCurrentPiece().checkMoveLegality(destX, destY, gamefield)) { // TODO function that checks move legality
-            System.out.println("test");
+        if (checkEnPassant(origX, origY, destX, destY)) {
+            // TODO: implement recognizing en passant and implement it happening
+            return true;
+        }else if (checkPromotion(origX, origX, destX, destY)) {
+            // TODO: allow player to choose what piece to promote to and move and replace the piece.
+            return true;
+        }else if (checkCastling(origX, origY, destX, destY)!=0) {
+            castle(origX, origY, destX, destY, checkCastling(origX, origY, destX, destY));
+            return true;
+        }else if (!gamefield.getBoard()[origX][origY].getCurrentPiece().checkMoveLegality(destX, destY, gamefield)) {
+            System.out.println("Move was illegal!");
             return false;
         } else {
-            gamefield.getBoard()[destX][destY].setCurrentPiece(gamefield.getBoard()[origX][origY].getCurrentPiece());
-            gamefield.getBoard()[destX][destY].getCurrentPiece().setMoved(true);
-            gamefield.getBoard()[origX][origY].setCurrentPiece(null);
+            simpleMovePiece(origX, origY, destX, destY);
             currentPlayer = currentPlayer.opponent;
             return true;
         }
     }
 
     // probably more necessary methods
+
+    // 0-no castling 1-white long castle, 2-white short castle, 3-black long castle, 4-black short castle
+    public int checkCastling(int origX, int origY, int destX, int destY) {
+        Tile[][] board = gamefield.getBoard();
+
+        // white long castle
+        if (origX==7 && origY==4 && destX==7 && destY==2 &&
+                !board[7][4].getCurrentPiece().getMoved() &&
+                !board[7][0].getCurrentPiece().getMoved() &&
+                board[7][1].getCurrentPiece()==null &&
+                board[7][2].getCurrentPiece()==null &&
+                board[7][3].getCurrentPiece()==null){
+            return 1;
+        } else if (origX==7 && origY==4 && destX==7 && destY==6 &&  // white short castle
+                !board[7][4].getCurrentPiece().getMoved() &&
+                !board[7][7].getCurrentPiece().getMoved() &&
+                board[7][5].getCurrentPiece()==null &&
+                board[7][6].getCurrentPiece()==null) {
+            return 2;
+        } else if (origX==0 && origY==4 && destX==0 && destY==2 &&  // black long castle
+                !board[0][4].getCurrentPiece().getMoved() &&
+                !board[0][0].getCurrentPiece().getMoved() &&
+                board[0][1].getCurrentPiece()==null &&
+                board[0][2].getCurrentPiece()==null &&
+                board[0][3].getCurrentPiece()==null){
+            return 3;
+        } else if (origX==0 && origY==4 && destX==0 && destY==6 && // black short castle
+                !board[0][4].getCurrentPiece().getMoved() &&
+                !board[0][7].getCurrentPiece().getMoved() &&
+                board[0][5].getCurrentPiece()==null &&
+                board[0][6].getCurrentPiece()==null){
+            return 4;
+        }
+        return 0;
+    }
+
+    public void castle(int origX, int origY, int destX, int destY, int cmd) {
+        if (cmd==1) {
+            // moving king
+            simpleMovePiece(origX, origY, destX, destY);
+            // moving rook
+            simpleMovePiece(7, 0, 7, 3);
+            currentPlayer = currentPlayer.opponent;
+        } else if(cmd==2) {
+            // moving king
+            simpleMovePiece(origX, origY, destX, destY);
+            // moving rook
+            simpleMovePiece(7, 7, 7, 5);
+            currentPlayer = currentPlayer.opponent;
+        } else if(cmd==3) {
+            // moving king
+            simpleMovePiece(origX, origY, destX, destY);
+            // moving rook
+            simpleMovePiece(0, 0, 0, 3);
+            currentPlayer = currentPlayer.opponent;
+        } else if(cmd==4) {
+            // moving king
+            simpleMovePiece(origX, origY, destX, destY);
+            // moving rook
+            simpleMovePiece(0, 7, 0, 5);
+            currentPlayer = currentPlayer.opponent;
+        }
+    }
+
+    public boolean checkPromotion(int origX, int origY, int destX, int destY) {
+        Tile[][] board = gamefield.getBoard();
+
+        if (board[origX][origY].getCurrentPiece() instanceof Pawn && (destX==0 || destX==7)) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean checkEnPassant(int origX, int origY, int destX, int destY) {
+        return false;
+    }
+
+    public void simpleMovePiece(int origX, int origY, int destX, int destY) {
+        gamefield.getBoard()[destX][destY].setCurrentPiece(gamefield.getBoard()[origX][origY].getCurrentPiece());
+        gamefield.getBoard()[destX][destY].getCurrentPiece().setMoved(true);
+        gamefield.getBoard()[origX][origY].setCurrentPiece(null);
+    }
 
     public void setCurrentPlayer(Player player) {
         currentPlayer = player;

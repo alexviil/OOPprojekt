@@ -6,7 +6,7 @@ public class Bishop extends Piece {
     }
 
     @Override
-    public ArrayList<int[]> allPossibleMoves(Board board) {
+    public ArrayList<int[]> allPossibleMoves(Tile[][] board) {
         return super.allDiagonalLineMoves(board);
     }
 

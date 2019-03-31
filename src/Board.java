@@ -16,45 +16,56 @@ public class Board {
 //                {'r', 'k', 'b', 'q', 'c', 'b', 'k', 'r'}};
 
         this.board = new Tile[][]{
-                {createRookTile(0,0,0), createKnightTile(0, 0, 1), createBishopTile(0, 0, 2), createQueenTile(0, 0, 3), createKingTile(0, 0, 4), createBishopTile(0, 0, 5), createKnightTile(0, 0, 6), createRookTile(0, 0, 7)},
+                {createRookTile(0,0,0), createEmptyTile( 0, 1), createEmptyTile( 0, 2), createEmptyTile( 0, 3), createKingTile(0, 0, 4), createEmptyTile( 0, 5), createEmptyTile( 0, 6), createRookTile(0, 0, 7)},
                 {createPawnTile(0,1, 0), createPawnTile(0, 1, 1), createPawnTile(0, 1, 2), createPawnTile(0, 1, 3), createPawnTile(0, 1, 4), createPawnTile(0, 1, 5), createPawnTile(0, 1, 6), createPawnTile(0, 1, 7)},
                 {createEmptyTile(2, 0), createEmptyTile(2, 1), createEmptyTile(2, 2), createEmptyTile(2, 3), createEmptyTile(2, 4), createEmptyTile(2, 5), createEmptyTile(2, 6), createEmptyTile(2, 7)},
                 {createEmptyTile(3, 0), createEmptyTile(3, 1), createEmptyTile(3, 2), createEmptyTile(3, 3), createEmptyTile(3, 4), createEmptyTile(3, 5), createEmptyTile(3, 6), createEmptyTile(3, 7)},
                 {createEmptyTile(4, 0), createEmptyTile(4, 1), createEmptyTile(4, 2), createEmptyTile(4, 3), createEmptyTile(4, 4), createEmptyTile(4, 5), createEmptyTile(4, 6), createEmptyTile(4, 7)},
                 {createEmptyTile(5, 0), createEmptyTile(5, 1), createEmptyTile(5, 2), createEmptyTile(5, 3), createEmptyTile(5, 4), createEmptyTile(5, 5), createEmptyTile(5, 6), createEmptyTile(5, 7)},
-                {createPawnTile(1, 6, 0), createPawnTile(1, 6, 1), createPawnTile(1,6, 2), createPawnTile(1,6, 3), createPawnTile(1, 6, 4), createPawnTile(1, 6, 5), createPawnTile(1, 6, 6), createPawnTile(1, 6, 7)},
-                {createRookTile(1, 7, 0), createKnightTile(1, 7, 1), createBishopTile(1, 7, 2), createQueenTile(1, 7, 3), createKingTile(1, 7, 4), createBishopTile(1, 7, 5), createKnightTile(1, 7, 6), createRookTile(1, 7, 7)}};
+                {createPawnTile(1, 6, 0), createPawnTile(1, 6, 1), createPawnTile(1,6, 2), createPawnTile(1,6, 3), createPawnTile(1, 6, 4), createPawnTile(1,6, 5), createPawnTile(1, 6, 6), createPawnTile(1, 6, 7)},
+                {createRookTile(1, 7, 0), createEmptyTile( 7, 1), createEmptyTile(7, 2), createEmptyTile(7, 3), createKingTile(1, 7, 4), createEmptyTile( 7, 5), createEmptyTile( 7, 6), createRookTile(1, 7, 7)}};
+
+
+//        this.board = new Tile[][]{
+//                {createRookTile(0,0,0), createKnightTile(0, 0, 1), createBishopTile(0, 0, 2), createQueenTile(0, 0, 3), createKingTile(0, 0, 4), createBishopTile(0, 0, 5), createKnightTile(0, 0, 6), createRookTile(0, 0, 7)},
+//                {createPawnTile(0,1, 0), createPawnTile(0, 1, 1), createPawnTile(0, 1, 2), createPawnTile(0, 1, 3), createPawnTile(0, 1, 4), createPawnTile(0, 1, 5), createPawnTile(0, 1, 6), createPawnTile(0, 1, 7)},
+//                {createEmptyTile(2, 0), createEmptyTile(2, 1), createEmptyTile(2, 2), createEmptyTile(2, 3), createEmptyTile(2, 4), createEmptyTile(2, 5), createEmptyTile(2, 6), createEmptyTile(2, 7)},
+//                {createEmptyTile(3, 0), createEmptyTile(3, 1), createEmptyTile(3, 2), createEmptyTile(3, 3), createEmptyTile(3, 4), createEmptyTile(3, 5), createEmptyTile(3, 6), createEmptyTile(3, 7)},
+//                {createEmptyTile(4, 0), createEmptyTile(4, 1), createEmptyTile(4, 2), createEmptyTile(4, 3), createEmptyTile(4, 4), createEmptyTile(4, 5), createEmptyTile(4, 6), createEmptyTile(4, 7)},
+//                {createEmptyTile(5, 0), createEmptyTile(5, 1), createEmptyTile(5, 2), createEmptyTile(5, 3), createEmptyTile(5, 4), createEmptyTile(5, 5), createEmptyTile(5, 6), createEmptyTile(5, 7)},
+//                {createPawnTile(1, 6, 0), createPawnTile(1, 6, 1), createPawnTile(1,6, 2), createPawnTile(1,6, 3), createPawnTile(1, 6, 4), createPawnTile(1,6, 5), createPawnTile(1, 6, 6), createPawnTile(1, 6, 7)},
+//                {createRookTile(1, 7, 0), createKnightTile(1, 7, 1), createBishopTile(1, 7, 2), createQueenTile(1, 7, 3), createKingTile(1, 7, 4), createBishopTile(1, 7, 5), createKnightTile(1, 7, 6), createRookTile(1, 7, 7)}};
     }
 
-    public ArrayList<int[]> everyWhiteAllMoves() {
+    public ArrayList<int[]> everyWhiteAllMoves(Tile[][] board) {
         ArrayList<int[]> allMoves = new ArrayList<>();
-        for (Tile[] tarr:this.board) {
+        for (Tile[] tarr:board) {
             for (Tile t:tarr) {
                 if (t.getCurrentPiece()!=null && t.getCurrentPiece().getColor()==1) {
-                    allMoves.addAll(t.getCurrentPiece().allPossibleMoves(this));
+                    allMoves.addAll(t.getCurrentPiece().allPossibleMoves(board));
                 }
             }
         }
         return allMoves;
     }
 
-    public ArrayList<int[]> everyBlackAllMoves() {
+    public ArrayList<int[]> everyBlackAllMoves(Tile[][] board) {
         ArrayList<int[]> allMoves = new ArrayList<>();
-        for (Tile[] tarr:this.board) {
+        for (Tile[] tarr:board) {
             for (Tile t:tarr) {
                 if (t.getCurrentPiece()!=null && t.getCurrentPiece().getColor()==0) {
-                    allMoves.addAll(t.getCurrentPiece().allPossibleMoves(this));
+                    allMoves.addAll(t.getCurrentPiece().allPossibleMoves(board));
                 }
             }
         }
         return allMoves;
     }
 
-    public int[] findWhiteKing() {
+    public int[] findWhiteKing(Tile[][] board) {
         int x = -1;
         int y = -1;
 
-        for (Tile[] tarr:this.board) {
+        for (Tile[] tarr:board) {
             for (Tile t : tarr) {
                 if (t.getCurrentPiece() instanceof King && t.getCurrentPiece().getColor()==1) {
                     x=t.getCurrentPiece().getPos()[0];
@@ -66,11 +77,11 @@ public class Board {
         return new int[]{x, y};
     }
 
-    public int[] findBlackKing() {
+    public int[] findBlackKing(Tile[][] board) {
         int x = -1;
         int y = -1;
 
-        for (Tile[] tarr:this.board) {
+        for (Tile[] tarr:board) {
             for (Tile t : tarr) {
                 if (t.getCurrentPiece() instanceof King && t.getCurrentPiece().getColor()==0) {
                     x=t.getCurrentPiece().getPos()[0];
@@ -86,8 +97,30 @@ public class Board {
         return board;
     }
 
-    public void setBoard(Tile[][] board) {
-        this.board = board;
+    public Tile[][] boardCopy() {
+        Tile[][] copy = new Tile[8][8];
+
+        for (Tile[] tarr:this.board) {
+            for (Tile t : tarr) {
+                if (t.getCurrentPiece() instanceof Bishop) {
+                    copy[t.getPos()[0]][t.getPos()[1]] = createBishopTile(t.getCurrentPiece().getColor(), t.getPos()[0], t.getPos()[1]);
+                } else if (t.getCurrentPiece() instanceof King) {
+                    copy[t.getPos()[0]][t.getPos()[1]] = createKingTile(t.getCurrentPiece().getColor(), t.getPos()[0], t.getPos()[1]);
+                } else if (t.getCurrentPiece() instanceof Knight) {
+                    copy[t.getPos()[0]][t.getPos()[1]] = createKnightTile(t.getCurrentPiece().getColor(), t.getPos()[0], t.getPos()[1]);
+                } else if (t.getCurrentPiece() instanceof Pawn) {
+                    copy[t.getPos()[0]][t.getPos()[1]] = createPawnTile(t.getCurrentPiece().getColor(), t.getPos()[0], t.getPos()[1]);
+                } else if (t.getCurrentPiece() instanceof Queen) {
+                    copy[t.getPos()[0]][t.getPos()[1]] = createQueenTile(t.getCurrentPiece().getColor(), t.getPos()[0], t.getPos()[1]);
+                } else if (t.getCurrentPiece() instanceof Rook) {
+                    copy[t.getPos()[0]][t.getPos()[1]] = createRookTile(t.getCurrentPiece().getColor(), t.getPos()[0], t.getPos()[1]);
+                }  else if (t.getCurrentPiece() == null) {
+                    copy[t.getPos()[0]][t.getPos()[1]] = createEmptyTile(t.getPos()[0], t.getPos()[1]);
+                }
+            }
+        }
+
+        return copy;
     }
 
     private Tile createPawnTile(int color, int x, int y) {

@@ -6,7 +6,7 @@ public class Queen extends Piece {
     }
 
     @Override
-    public ArrayList<int[]> allPossibleMoves(Board board) {
+    public ArrayList<int[]> allPossibleMoves(Tile[][] board) {
         ArrayList<int[]> straightMoves = super.allStraightLineMoves(board);
         ArrayList<int[]> diagonalMoves = super.allDiagonalLineMoves(board);
         ArrayList<int[]> allMoves = new ArrayList<>();

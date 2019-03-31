@@ -7,7 +7,7 @@ public class Rook extends Piece {
     }
 
     @Override
-    public ArrayList<int[]> allPossibleMoves(Board board) {
+    public ArrayList<int[]> allPossibleMoves(Tile[][] board) {
         return super.allStraightLineMoves(board);
     }
 
