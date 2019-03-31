@@ -21,7 +21,7 @@ public class Board {
                 {createEmptyTile(3, 0), createEmptyTile(3, 1), createEmptyTile(3, 2), createEmptyTile(3, 3), createEmptyTile(3, 4), createEmptyTile(3, 5), createEmptyTile(3, 6), createEmptyTile(3, 7)},
                 {createEmptyTile(4, 0), createEmptyTile(4, 1), createEmptyTile(4, 2), createEmptyTile(4, 3), createEmptyTile(4, 4), createEmptyTile(4, 5), createEmptyTile(4, 6), createEmptyTile(4, 7)},
                 {createEmptyTile(5, 0), createEmptyTile(5, 1), createEmptyTile(5, 2), createEmptyTile(5, 3), createEmptyTile(5, 4), createEmptyTile(5, 5), createEmptyTile(5, 6), createEmptyTile(5, 7)},
-                {createPawnTile(1, 6, 0), createPawnTile(1, 6, 1), createPawnTile(1, 6, 2), createPawnTile(1, 6, 3), createPawnTile(1, 6, 4), createPawnTile(1, 6, 5), createPawnTile(1, 6, 6), createPawnTile(1, 6, 7)},
+                {createPawnTile(1, 6, 0), createPawnTile(1, 6, 1), createPawnTile(1,6, 2), createEmptyTile(6, 3), createPawnTile(1, 6, 4), createPawnTile(1, 6, 5), createPawnTile(1, 6, 6), createPawnTile(1, 6, 7)},
                 {createRookTile(1, 7, 0), createKnightTile(1, 7, 1), createBishopTile(1, 7, 2), createQueenTile(1, 7, 3), createKingTile(1, 7, 4), createBishopTile(1, 7, 5), createKnightTile(1, 7, 6), createRookTile(1, 7, 7)}};
     }
 
