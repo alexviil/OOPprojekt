@@ -15,7 +15,18 @@ public abstract class Piece {
 
     public boolean checkMoveLegality(int xEnd, int yEnd, Board board) {
         boolean legal = false;
-        for (int[] el:this.allPossibleMoves(board)) {
+        ArrayList<int[]> allEnemyMoves;
+        int[] kingPos;
+
+        if (this.color==1) {
+            allEnemyMoves = board.everyBlackAllMoves();
+            kingPos = board.findWhiteKing();
+        } else {
+            allEnemyMoves = board.everyWhiteAllMoves();
+            kingPos = board.findBlackKing();
+        }
+
+        for (int[] el:this.allPossibleMoves(board)) { // checks if move is otherwise possible for that piece
             if (Arrays.equals(el, new int[]{xEnd, yEnd})) {
                 legal = true;
                 break;
@@ -32,8 +43,7 @@ public abstract class Piece {
 
         int i=1;
         while (position[0]+i<=7 && (board.getBoard()[position[0]+i][position[1]].getCurrentPiece()==null ||
-                board.getBoard()[position[0]+i][position[1]].getCurrentPiece().getColor()!=this.getColor() ||
-                board.getBoard()[position[0]+i][position[1]].getCurrentPiece()==this)) {
+                board.getBoard()[position[0]+i][position[1]].getCurrentPiece().getColor()!=this.getColor())) {
             possibleMoves.add(new int[]{position[0]+i, position[1]});
             if (board.getBoard()[position[0]+i][position[1]].getCurrentPiece()!=null && board.getBoard()[position[0]+i][position[1]].getCurrentPiece().getColor()!=this.getColor()) {
                 break;
@@ -43,8 +53,7 @@ public abstract class Piece {
 
         i=1;
         while (position[0]-i>=0 && (board.getBoard()[position[0]-i][position[1]].getCurrentPiece()==null ||
-                board.getBoard()[position[0]-i][position[1]].getCurrentPiece().getColor()!=this.getColor() ||
-                board.getBoard()[position[0]-i][position[1]].getCurrentPiece()==this)) {
+                board.getBoard()[position[0]-i][position[1]].getCurrentPiece().getColor()!=this.getColor())) {
             possibleMoves.add(new int[]{position[0]-i, position[1]});
             if (board.getBoard()[position[0]-i][position[1]].getCurrentPiece()!=null && board.getBoard()[position[0]-i][position[1]].getCurrentPiece().getColor()!=this.getColor()) {
                 break;
@@ -54,8 +63,7 @@ public abstract class Piece {
 
         i=1;
         while (position[1]+i<=7 && (board.getBoard()[position[0]][position[1]+i].getCurrentPiece()==null ||
-                board.getBoard()[position[0]][position[1]+i].getCurrentPiece().getColor()!=this.getColor() ||
-                board.getBoard()[position[0]][position[1]+i].getCurrentPiece()==this)) {
+                board.getBoard()[position[0]][position[1]+i].getCurrentPiece().getColor()!=this.getColor())) {
             possibleMoves.add(new int[]{position[0], position[1]+i});
             if (board.getBoard()[position[0]][position[1]+i].getCurrentPiece()!=null && board.getBoard()[position[0]][position[1]+i].getCurrentPiece().getColor()!=this.getColor()) {
                 break;
@@ -65,8 +73,7 @@ public abstract class Piece {
 
         i=1;
         while (position[1]-i>=0 && (board.getBoard()[position[0]][position[1]-i].getCurrentPiece()==null ||
-                board.getBoard()[position[0]][position[1]-i].getCurrentPiece().getColor()!=this.getColor() ||
-                board.getBoard()[position[0]][position[1]-i].getCurrentPiece()==this)) {
+                board.getBoard()[position[0]][position[1]-i].getCurrentPiece().getColor()!=this.getColor())) {
             possibleMoves.add(new int[]{position[0], position[1]-i});
             if (board.getBoard()[position[0]][position[1]-i].getCurrentPiece()!=null && board.getBoard()[position[0]][position[1]-i].getCurrentPiece().getColor()!=this.getColor()) {
                 break;

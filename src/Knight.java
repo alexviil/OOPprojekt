@@ -61,9 +61,9 @@ public class Knight extends Piece {
 
         // left and up
         if (position[0]-1 >= 0 && position[1]-2 >= 0 &&
-                (board.getBoard()[position[0]+2][position[1]-1].getCurrentPiece()==null ||
-                        board.getBoard()[position[0]+2][position[1]-1].getCurrentPiece().getColor()!=this.getColor())) {
-            possibleMoves.add(new int[]{position[0]+2, position[1]-1});
+                (board.getBoard()[position[0]-1][position[1]-2].getCurrentPiece()==null ||
+                        board.getBoard()[position[0]-1][position[1]-2].getCurrentPiece().getColor()!=this.getColor())) {
+            possibleMoves.add(new int[]{position[0]-1, position[1]-2});
         }
 
 
