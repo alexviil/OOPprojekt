@@ -8,7 +8,7 @@ public class Pawn extends Piece {
 
     @Override
     public ArrayList<int[]> allPossibleMoves(Board board) {
-        // TODO: enpassant and changing at last row
+        // TODO: enpassant and promotion
         ArrayList<int[]> possibleMoves = new ArrayList<>();
         int[] position = this.getPos();
         if (this.getColor()==1) {

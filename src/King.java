@@ -7,7 +7,22 @@ public class King extends Piece {
 
     @Override
     public ArrayList<int[]> allPossibleMoves(Board board) {
-        return new ArrayList<>();
+        // TODO: castling and check interactions
+        ArrayList<int[]> possibleMoves = new ArrayList<>();
+        int[] position = this.getPos();
+
+        for (int i = position[0]-1; i <= position[0]+1; i++) {
+            for (int j = position[1]-1; j <= position[1]+1; j++) {
+                if ((i != position[0] || j != position[1]) &&
+                        i>=0 && i<=7 && j>=0 && j<=7 &&
+                        (board.getBoard()[i][j].getCurrentPiece()==null ||
+                        board.getBoard()[i][j].getCurrentPiece().getColor()!=this.getColor())) { //ignore the center tile, and tiles out of boundaries and tiles with friendly pieces.
+                    possibleMoves.add(new int[]{i, j});
+                }
+            }
+        }
+
+        return possibleMoves;
     }
 
     @Override

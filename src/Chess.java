@@ -31,6 +31,7 @@ public class Chess {
             return false;
         } else {
             gamefield.getBoard()[destX][destY].setCurrentPiece(gamefield.getBoard()[origX][origY].getCurrentPiece());
+            gamefield.getBoard()[destX][destY].getCurrentPiece().setMoved(true);
             gamefield.getBoard()[origX][origY].setCurrentPiece(null);
             currentPlayer = currentPlayer.opponent;
             return true;
