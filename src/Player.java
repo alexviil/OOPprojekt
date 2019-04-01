@@ -86,7 +86,7 @@ public class Player implements Runnable {
                     int destX = Character.getNumericValue(event.charAt(10));
                     int destY = Character.getNumericValue(event.charAt(12));
                     processMove(origX, origY, destX, destY);
-                } catch (ArrayIndexOutOfBoundsException e) {
+                } catch (ArrayIndexOutOfBoundsException | StringIndexOutOfBoundsException | NullPointerException e) {
                     output.println("OB"); // Out of bounds
                 }
             } else if (event.startsWith("MSG")) {
