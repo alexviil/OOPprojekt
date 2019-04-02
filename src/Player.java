@@ -31,8 +31,8 @@ public class Player implements Runnable {
             opponent.opponent = this;
             opponent.output.println(chess);
             output.println(chess);
-            output.println("MSG White starts first.");
-            opponent.output.println("MSG White starts first.");
+            output.println("MSG White starts first. White is lowercase, black is uppercase.");
+            opponent.output.println("MSG White starts first. White is lowercase, black is uppercase.");
             opponent.output.println("INIT");
         }
     }
@@ -58,7 +58,9 @@ public class Player implements Runnable {
 
     private void processMove(int origX, int origY, int destX, int destY) {
         try {
-            if (chess.movePiece(origX, origY, destX, destY, this)) {
+            if (!isWhite && chess.isPieceWhite(origX, origY) || isWhite && !chess.isPieceWhite(origX, origY)){
+                output.println("IM");
+            } else if (chess.movePiece(origX, origY, destX, destY, this)) {
                 output.println(chess);
                 opponent.output.println(chess);
                 output.println("VM"); // Valid move

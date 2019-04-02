@@ -140,6 +140,10 @@ public class Chess {
         return currentPlayer;
     }
 
+    public boolean isPieceWhite(int x, int y) {
+        return gamefield.getBoard()[x][y].getCurrentPiece().getColor() == 1;
+    }
+
     public String toString() { // Has to be a String without line separators
         /* example
         +    A   B   C   D   E   F   G   H    +
