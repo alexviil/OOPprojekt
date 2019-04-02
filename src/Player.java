@@ -108,4 +108,8 @@ public class Player implements Runnable {
     public String toString() {
         return isWhite ? "white" : "black";
     }
+
+    public boolean isWhite() {
+        return isWhite;
+    }
 }

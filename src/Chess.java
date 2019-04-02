@@ -18,11 +18,28 @@ public class Chess {
     }
 
     public Player getWinner() {
-        // TODO: winning and tie
-        if (false) { // Checkmate condition in favour of White
-            // return Player White
-        } else if (false) {  // Checkmate in favour of Black
-            // return Player Black
+        boolean win = true;
+        // Checks if enemy has any legal move with any piece, if not then player wins
+        if (!currentPlayer.isWhite()) {
+            for (int[] move : gamefield.everyBlackAllMoves(gamefield.getBoard())) {
+                win = checkMoveExistence(move[0], move[1]);
+                if (!win) {
+                    System.out.println(move[0]+ " " +move[1]);
+                    break;
+                }
+            }
+        } else {
+            for (int[] move : gamefield.everyWhiteAllMoves(gamefield.getBoard())) {
+                win = checkMoveExistence(move[0], move[1]);
+                if (!win) {
+                    System.out.println(move[0]+ " " +move[1] + "     " + move[2] + " " + move[3]);
+                    break;
+                }
+            }
+        }
+
+        if (win) {
+            return currentPlayer.opponent;
         }
 
         return null;
@@ -167,5 +184,14 @@ public class Chess {
         +    A   B   C   D   E   F   G   H    +
          */
         return gamefield.toString();
+    }
+
+    private boolean checkMoveExistence(int x, int y) {
+        for (int[] elem : gamefield.getBoard()[x][y].getCurrentPiece().allPossibleMoves(gamefield.getBoard())) {
+            if (gamefield.getBoard()[x][y].getCurrentPiece().checkMoveLegality(elem[2], elem[3], gamefield)) {
+                return false;
+            }
+        }
+        return true;
     }
 }
