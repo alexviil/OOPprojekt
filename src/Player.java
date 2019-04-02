@@ -63,7 +63,7 @@ public class Player implements Runnable {
         try {
             if (!isWhite && chess.isPieceWhite(origX, origY) || isWhite && !chess.isPieceWhite(origX, origY)){
                 output.println("IM");
-            } else if (chess.movePiece(origX, origY, destX, destY, this)) {
+            } else if (chess.movePiece(origX, origY, destX, destY)) {
                 output.println(chess);
                 opponent.output.println(chess);
                 if (chess.getWinner() == this) {

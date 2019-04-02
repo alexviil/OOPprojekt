@@ -3,6 +3,7 @@ import java.util.ArrayList;
 public class Chess {
     Player currentPlayer;
     private Board gamefield;
+    private int[] lastMove = new int[]{-1,-1,-1,-1};
 
     public Chess() {
 //        gamefield = new char[][]{
@@ -45,9 +46,10 @@ public class Chess {
         return null;
     }
 
-    public synchronized boolean movePiece(int origX, int origY, int destX, int destY, Player player) {
+    public synchronized boolean movePiece(int origX, int origY, int destX, int destY) {
         if (checkEnPassant(origX, origY, destX, destY)) {
-            // TODO: implement recognizing en passant and implement it happening
+            simpleMovePiece(origX, origY, destX, destY);
+            gamefield.getBoard()[lastMove[2]][lastMove[3]].setCurrentPiece(null);
             return true;
         }else if (checkPromotion(origX, origX, destX, destY)) {
             // TODO: allow player to choose what piece to promote to and move and replace the piece.
@@ -60,6 +62,7 @@ public class Chess {
             return false;
         } else {
             simpleMovePiece(origX, origY, destX, destY);
+            this.lastMove = new int[]{origX, origY, destX, destY};
             currentPlayer = currentPlayer.opponent;
             return true;
         }
@@ -140,7 +143,12 @@ public class Chess {
     }
 
     public boolean checkEnPassant(int origX, int origY, int destX, int destY) {
-        return false;
+        return (this.lastMove[0] != -1 &&
+                this.gamefield.getBoard()[lastMove[2]][lastMove[3]].getCurrentPiece()!=null &&
+                this.lastMove[1] == this.lastMove[3] && Math.abs(this.lastMove[0]-this.lastMove[2])==2 &&
+                this.gamefield.getBoard()[lastMove[2]][lastMove[3]].getCurrentPiece().getColor()!=this.gamefield.getBoard()[origX][origY].getCurrentPiece().getColor() &&
+                origX == this.lastMove[2] && Math.abs(origY-lastMove[3])==1 &&
+                Math.abs(destX-this.lastMove[2])==1 && destY==lastMove[3]);
     }
 
     public void simpleMovePiece(int origX, int origY, int destX, int destY) {
