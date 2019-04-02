@@ -16,7 +16,7 @@ public class King extends Piece {
                         i>=0 && i<=7 && j>=0 && j<=7 &&
                         (board[i][j].getCurrentPiece()==null ||
                         board[i][j].getCurrentPiece().getColor()!=this.getColor())) { //ignore the center tile, and tiles out of boundaries and tiles with friendly pieces.
-                    possibleMoves.add(new int[]{i, j});
+                    possibleMoves.add(new int[]{position[0], position[1], i, j});
                 }
             }
         }
