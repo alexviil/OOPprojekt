@@ -24,6 +24,7 @@ public abstract class Piece {
         }
 
         if (legal) {
+            System.out.println(new java.sql.Timestamp(System.currentTimeMillis()) + " Move was otherwise legal!");
             ArrayList<int[]> allEnemyMoves;
             int[] kingPos;
 
@@ -43,7 +44,7 @@ public abstract class Piece {
             for (int[] el : allEnemyMoves) { // checks if any enemy piece is attacking the king piece
                 if (Arrays.equals(new int[]{el[2], el[3]}, kingPos)) {
                     legal = false;
-                    System.out.println("Move keeps or puts the king in danger!");
+                    System.out.println(new java.sql.Timestamp(System.currentTimeMillis()) + " Move keeps or puts the king in danger!");
                     break;
                 }
             }

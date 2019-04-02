@@ -155,12 +155,16 @@ public class Board {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("GM ");
+        sb.append("+    A   B   C   D   E   F   G   H    +&   ---------------------------------   &");
+        int row = 1;
         for (Tile[] tiles : this.board) {
+            sb.append(row + "  | ");
             for (Tile tile : tiles) {
-                sb.append(" " + tile.toString() + " ");
+                sb.append(tile.toString() + " | ");
             }
-            sb.append("&");
+            sb.append(" " + row++ + "&   |-------------------------------|&");
         }
+        sb.append("+    A   B   C   D   E   F   G   H    +");
         return sb.toString();
     }
 }

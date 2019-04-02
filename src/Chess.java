@@ -56,7 +56,7 @@ public class Chess {
             castle(origX, origY, destX, destY, checkCastling(origX, origY, destX, destY));
             return true;
         }else if (!gamefield.getBoard()[origX][origY].getCurrentPiece().checkMoveLegality(destX, destY, gamefield)) {
-            System.out.println("Move was illegal!");
+            System.out.println(new java.sql.Timestamp(System.currentTimeMillis()) + " Move was illegal!");
             return false;
         } else {
             simpleMovePiece(origX, origY, destX, destY);

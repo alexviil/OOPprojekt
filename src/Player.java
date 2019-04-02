@@ -1,4 +1,3 @@
-import java.io.Console;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
@@ -23,9 +22,11 @@ public class Player implements Runnable {
         output = new PrintWriter(socket.getOutputStream(), true);
         output.println(isWhite ? "w" : "b");
         if (isWhite) {
+            System.out.println(new java.sql.Timestamp(System.currentTimeMillis()) + " White connected");
             chess.setCurrentPlayer(this);
             output.println("MSG Waiting for other client...");
         } else {
+            System.out.println(new java.sql.Timestamp(System.currentTimeMillis()) + " Black connected");
             opponent = chess.getCurrentPlayer();
             opponent.opponent = this;
             opponent.output.println(chess);
@@ -78,6 +79,7 @@ public class Player implements Runnable {
         while (input.hasNextLine()) {
             String event = input.nextLine();
             if (event.equals("QUIT")) {
+                System.out.println(new java.sql.Timestamp(System.currentTimeMillis()) + " Player " + this + " Connection terminated");
                 return;
             } else if (event.startsWith("VM")) { // VM x,y to x,y
                 try {
