@@ -26,7 +26,6 @@ public class Client {
         try {
             String response = input.nextLine();
             String colour = response.equals("w") ? "White" : "Black";
-            String colourOpponent = colour.equals("White") ? "Black" : "White";
             System.out.println("You are player " + colour + ".");
             while (input.hasNextLine()) {
                 response = input.nextLine();
@@ -36,8 +35,8 @@ public class Client {
                     System.out.print("Invalid move, try again: ");
                     output.println(CLI.nextLine());
                 } else if (response.startsWith("OPM")) {
-                    System.out.println("Opponent moved piece " + response.substring(4, 14));
-                    for (String s : response.substring(17).split("&")) {
+                    System.out.println("Opponent moved piece " + response.substring(4, 12));
+                    for (String s : response.substring(15).split("&")) {
                         System.out.println(s);
                     }
                     System.out.print("Command: ");
@@ -56,7 +55,7 @@ public class Client {
                     System.out.print("Unrecognized command, try again: ");
                     output.println(CLI.nextLine());
                 } else if (response.startsWith("OB")) {
-                    System.out.print("Move out of bounds, try again: ");
+                    System.out.print("Move out of bounds or wrong format, try again: ");
                     output.println(CLI.nextLine());
                 } else if (response.startsWith("GM")) {
                     for (String s : response.substring(3).split("&")) {
@@ -65,7 +64,8 @@ public class Client {
                 } else if (response.equals("VCT")) {
                     System.out.println("You won!");
                     break;
-                } else if (response.equals("DFT")) {
+                } else if (response.startsWith("DFT")) {
+                    System.out.println("Opponent moved piece " + response.substring(4, 12));
                     System.out.println("You lost.");
                     break;
                 } else if (response.equals("TIE")) {

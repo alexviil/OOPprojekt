@@ -1,6 +1,9 @@
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.lang.reflect.Array;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Scanner;
 
 public class Player implements Runnable {
@@ -63,12 +66,12 @@ public class Player implements Runnable {
             } else if (chess.movePiece(origX, origY, destX, destY, this)) {
                 output.println(chess);
                 opponent.output.println(chess);
-                output.println("VM"); // Valid move
-                opponent.output.println("OPM " + origX + "," + origY + " to " + destX + "," + destY + chess);
                 if (chess.getWinner() == this) {
                     output.println("VCT"); // Victory
-                    opponent.output.println("DFT"); // Defeat
+                    opponent.output.println("DFT " + numberToLetter(origY) + (origX + 1) + " to " + numberToLetter(destY) + (destX + 1) + chess); // Defeat
                 }
+                output.println("VM"); // Valid move
+                opponent.output.println("OPM " + numberToLetter(origY) + (origX + 1) + " to " + numberToLetter(destY) + (destX + 1) + chess);
             } else {
                 output.println("IM"); // Invalid/Illegal move
             }
@@ -85,12 +88,15 @@ public class Player implements Runnable {
                 return;
             } else if (event.startsWith("VM")) { // VM x,y to x,y
                 try {
-                    int origX = Character.getNumericValue(event.charAt(3));
-                    int origY = Character.getNumericValue(event.charAt(5));
-                    int destX = Character.getNumericValue(event.charAt(10));
-                    int destY = Character.getNumericValue(event.charAt(12));
+                    int[] numbers = getNumbers(event);
+                    System.out.println(Arrays.toString(numbers));
+                    int origY = numbers[0];
+                    int origX = numbers[1] - 1;
+                    int destY = numbers[2];
+                    int destX = numbers[3] - 1;
                     processMove(origX, origY, destX, destY);
                 } catch (ArrayIndexOutOfBoundsException | StringIndexOutOfBoundsException | NullPointerException e) {
+                    e.printStackTrace();
                     output.println("OB"); // Out of bounds
                 }
             } else if (event.startsWith("MSG")) {
@@ -111,5 +117,35 @@ public class Player implements Runnable {
 
     public boolean isWhite() {
         return isWhite;
+    }
+
+    public String numberToLetter(int i) {
+        return new String[]{"A", "B", "C", "D", "E", "F", "G", "H"}[i];
+    }
+
+    public int[] getNumbers(String s) {
+        int[] numbers = new int[4];
+        int indeks = 0;
+        ArrayList<Character> ints = new ArrayList<Character>(Arrays.asList('1', '2', '3', '4', '5', '6', '7', '8'));
+        ArrayList<Character> chars = new ArrayList<Character>(Arrays.asList('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'));
+        for (char c : s.toCharArray()) {
+            if (indeks == 4) {
+                break;
+            } else if (Character.isLetter(c) && chars.contains(Character.toLowerCase(c))) {
+                numbers[indeks] = letterToNumber(Character.toLowerCase(c));
+                indeks++;
+            } else if (Character.isDigit(c) && ints.contains(c)) {
+                numbers[indeks] = Character.getNumericValue(c);
+                indeks++;
+            }
+        }
+        if (indeks != 4) {
+            throw new StringIndexOutOfBoundsException();
+        }
+        return numbers;
+    }
+
+    public int letterToNumber(char s) {
+        return (int)s - 97;
     }
 }
