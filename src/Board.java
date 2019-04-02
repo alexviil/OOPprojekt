@@ -15,26 +15,26 @@ public class Board {
 //                {'p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'},
 //                {'r', 'k', 'b', 'q', 'c', 'b', 'k', 'r'}};
 
-        this.board = new Tile[][]{
-                {createRookTile(0,0,0), createEmptyTile( 0, 1), createEmptyTile( 0, 2), createEmptyTile( 0, 3), createKingTile(0, 0, 4), createEmptyTile( 0, 5), createEmptyTile( 0, 6), createRookTile(0, 0, 7)},
-                {createPawnTile(0,1, 0), createPawnTile(0, 1, 1), createPawnTile(0, 1, 2), createPawnTile(0, 1, 3), createPawnTile(0, 1, 4), createPawnTile(0, 1, 5), createPawnTile(0, 1, 6), createPawnTile(0, 1, 7)},
-                {createEmptyTile(2, 0), createEmptyTile(2, 1), createEmptyTile(2, 2), createEmptyTile(2, 3), createEmptyTile(2, 4), createEmptyTile(2, 5), createEmptyTile(2, 6), createEmptyTile(2, 7)},
-                {createEmptyTile(3, 0), createEmptyTile(3, 1), createEmptyTile(3, 2), createEmptyTile(3, 3), createEmptyTile(3, 4), createEmptyTile(3, 5), createEmptyTile(3, 6), createEmptyTile(3, 7)},
-                {createEmptyTile(4, 0), createBishopTile(0,4, 1), createEmptyTile(4, 2), createEmptyTile(4, 3), createEmptyTile(4, 4), createEmptyTile(4, 5), createEmptyTile(4, 6), createEmptyTile(4, 7)},
-                {createKnightTile(0, 5, 0), createKingTile(0,5, 1), createEmptyTile(5, 2), createEmptyTile(5, 3), createEmptyTile(5, 4), createEmptyTile(5, 5), createEmptyTile(5, 6), createEmptyTile(5, 7)},
-                {createEmptyTile(6, 0), createEmptyTile( 6, 1), createEmptyTile(6, 2), createEmptyTile(6, 3), createPawnTile(1, 6, 4), createPawnTile(1,6, 5), createPawnTile(1, 6, 6), createPawnTile(1, 6, 7)},
-                {createKingTile(1, 7, 0), createEmptyTile( 7, 1), createEmptyTile(7, 2), createEmptyTile(7, 3), createEmptyTile( 7, 4), createEmptyTile( 7, 5), createEmptyTile( 7, 6), createEmptyTile( 7, 7)}};
-
-
 //        this.board = new Tile[][]{
-//                {createRookTile(0,0,0), createKnightTile(0, 0, 1), createBishopTile(0, 0, 2), createQueenTile(0, 0, 3), createKingTile(0, 0, 4), createBishopTile(0, 0, 5), createKnightTile(0, 0, 6), createRookTile(0, 0, 7)},
+//                {createRookTile(0,0,0), createEmptyTile( 0, 1), createEmptyTile( 0, 2), createEmptyTile( 0, 3), createKingTile(0, 0, 4), createEmptyTile( 0, 5), createEmptyTile( 0, 6), createRookTile(0, 0, 7)},
 //                {createPawnTile(0,1, 0), createPawnTile(0, 1, 1), createPawnTile(0, 1, 2), createPawnTile(0, 1, 3), createPawnTile(0, 1, 4), createPawnTile(0, 1, 5), createPawnTile(0, 1, 6), createPawnTile(0, 1, 7)},
 //                {createEmptyTile(2, 0), createEmptyTile(2, 1), createEmptyTile(2, 2), createEmptyTile(2, 3), createEmptyTile(2, 4), createEmptyTile(2, 5), createEmptyTile(2, 6), createEmptyTile(2, 7)},
 //                {createEmptyTile(3, 0), createEmptyTile(3, 1), createEmptyTile(3, 2), createEmptyTile(3, 3), createEmptyTile(3, 4), createEmptyTile(3, 5), createEmptyTile(3, 6), createEmptyTile(3, 7)},
-//                {createEmptyTile(4, 0), createEmptyTile(4, 1), createEmptyTile(4, 2), createEmptyTile(4, 3), createEmptyTile(4, 4), createEmptyTile(4, 5), createEmptyTile(4, 6), createEmptyTile(4, 7)},
-//                {createEmptyTile(5, 0), createEmptyTile(5, 1), createEmptyTile(5, 2), createEmptyTile(5, 3), createEmptyTile(5, 4), createEmptyTile(5, 5), createEmptyTile(5, 6), createEmptyTile(5, 7)},
-//                {createPawnTile(1, 6, 0), createPawnTile(1, 6, 1), createPawnTile(1,6, 2), createPawnTile(1,6, 3), createPawnTile(1, 6, 4), createPawnTile(1,6, 5), createPawnTile(1, 6, 6), createPawnTile(1, 6, 7)},
-//                {createRookTile(1, 7, 0), createKnightTile(1, 7, 1), createBishopTile(1, 7, 2), createQueenTile(1, 7, 3), createKingTile(1, 7, 4), createBishopTile(1, 7, 5), createKnightTile(1, 7, 6), createRookTile(1, 7, 7)}};
+//                {createEmptyTile(4, 0), createBishopTile(0,4, 1), createEmptyTile(4, 2), createEmptyTile(4, 3), createEmptyTile(4, 4), createEmptyTile(4, 5), createEmptyTile(4, 6), createEmptyTile(4, 7)},
+//                {createKnightTile(0, 5, 0), createKingTile(0,5, 1), createEmptyTile(5, 2), createEmptyTile(5, 3), createEmptyTile(5, 4), createEmptyTile(5, 5), createEmptyTile(5, 6), createEmptyTile(5, 7)},
+//                {createEmptyTile(6, 0), createEmptyTile( 6, 1), createEmptyTile(6, 2), createEmptyTile(6, 3), createPawnTile(1, 6, 4), createPawnTile(1,6, 5), createPawnTile(1, 6, 6), createPawnTile(1, 6, 7)},
+//                {createKingTile(1, 7, 0), createEmptyTile( 7, 1), createEmptyTile(7, 2), createEmptyTile(7, 3), createEmptyTile( 7, 4), createEmptyTile( 7, 5), createEmptyTile( 7, 6), createEmptyTile( 7, 7)}};
+
+
+        this.board = new Tile[][]{
+                {createRookTile(0,0,0), createKnightTile(0, 0, 1), createBishopTile(0, 0, 2), createQueenTile(0, 0, 3), createKingTile(0, 0, 4), createBishopTile(0, 0, 5), createKnightTile(0, 0, 6), createRookTile(0, 0, 7)},
+                {createPawnTile(0,1, 0), createPawnTile(0, 1, 1), createPawnTile(0, 1, 2), createPawnTile(0, 1, 3), createPawnTile(0, 1, 4), createPawnTile(0, 1, 5), createPawnTile(0, 1, 6), createPawnTile(0, 1, 7)},
+                {createEmptyTile(2, 0), createEmptyTile(2, 1), createEmptyTile(2, 2), createEmptyTile(2, 3), createEmptyTile(2, 4), createEmptyTile(2, 5), createEmptyTile(2, 6), createEmptyTile(2, 7)},
+                {createEmptyTile(3, 0), createEmptyTile(3, 1), createEmptyTile(3, 2), createEmptyTile(3, 3), createEmptyTile(3, 4), createEmptyTile(3, 5), createEmptyTile(3, 6), createEmptyTile(3, 7)},
+                {createEmptyTile(4, 0), createEmptyTile(4, 1), createEmptyTile(4, 2), createEmptyTile(4, 3), createEmptyTile(4, 4), createEmptyTile(4, 5), createEmptyTile(4, 6), createEmptyTile(4, 7)},
+                {createEmptyTile(5, 0), createEmptyTile(5, 1), createEmptyTile(5, 2), createEmptyTile(5, 3), createEmptyTile(5, 4), createEmptyTile(5, 5), createEmptyTile(5, 6), createEmptyTile(5, 7)},
+                {createPawnTile(1, 6, 0), createPawnTile(1, 6, 1), createPawnTile(1,6, 2), createPawnTile(1,6, 3), createPawnTile(1, 6, 4), createPawnTile(1,6, 5), createPawnTile(1, 6, 6), createPawnTile(1, 6, 7)},
+                {createRookTile(1, 7, 0), createKnightTile(1, 7, 1), createBishopTile(1, 7, 2), createQueenTile(1, 7, 3), createKingTile(1, 7, 4), createBishopTile(1, 7, 5), createKnightTile(1, 7, 6), createRookTile(1, 7, 7)}};
     }
 
     public ArrayList<int[]> everyWhiteAllMoves(Tile[][] board) {

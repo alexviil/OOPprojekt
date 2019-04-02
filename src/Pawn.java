@@ -35,12 +35,12 @@ public class Pawn extends Piece {
                 }
             }
             if (position[0]<7 && position[1]<7) {
-                if (board[position[0] + 1][position[1] + 1] != null && Arrays.asList(this.getbPieces()).contains(board[position[0] + 1][position[1] + 1].toString())) {
+                if (board[position[0] + 1][position[1] + 1] != null && Arrays.asList(this.getwPieces()).contains(board[position[0] + 1][position[1] + 1].toString())) {
                     possibleMoves.add(new int[]{position[0], position[1], position[0]+1, position[1]+1});
                 }
             }
             if (position[0]<7 && position[1]>0) {
-                if (board[position[0] + 1][position[1] - 1] != null && Arrays.asList(this.getbPieces()).contains(board[position[0] + 1][position[1] - 1].toString())) {
+                if (board[position[0] + 1][position[1] - 1] != null && Arrays.asList(this.getwPieces()).contains(board[position[0] + 1][position[1] - 1].toString())) {
                     possibleMoves.add(new int[]{position[0], position[1], position[0]+1, position[1]-1});
                 }
             }
