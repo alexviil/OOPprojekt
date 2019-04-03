@@ -51,8 +51,9 @@ public class Chess {
             simpleMovePiece(origX, origY, destX, destY);
             gamefield.getBoard()[lastMove[2]][lastMove[3]].setCurrentPiece(null);
             return true;
-        }else if (checkPromotion(origX, origX, destX, destY)) {
-            // TODO: allow player to choose what piece to promote to and move and replace the piece.
+        }else if (checkPromotion(origX, origY, destX, destY)) {
+            gamefield.getBoard()[origX][origY].setCurrentPiece(null);
+            gamefield.getBoard()[destX][destY].setCurrentPiece(new Queen(currentPlayer.isWhite() ? 1 : 0, new int[]{destX, destY}));
             return true;
         }else if (checkCastling(origX, origY, destX, destY)!=0) {
             castle(origX, origY, destX, destY, checkCastling(origX, origY, destX, destY));
@@ -136,7 +137,7 @@ public class Chess {
     public boolean checkPromotion(int origX, int origY, int destX, int destY) {
         Tile[][] board = gamefield.getBoard();
 
-        if (board[origX][origY].getCurrentPiece() instanceof Pawn && (destX==0 || destX==7)) {
+    if (board[origX][origY].getCurrentPiece() instanceof Pawn && (destX==0 && currentPlayer.isWhite() || destX==7 && !currentPlayer.isWhite())) {
             return true;
         }
         return false;
