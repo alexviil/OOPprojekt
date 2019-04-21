@@ -1,3 +1,6 @@
+package client;
+
+import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.util.Scanner;
 import java.net.Socket;
@@ -7,13 +10,6 @@ public class Client {
     private Scanner input;
     private Scanner CLI;
     private PrintWriter output;
-
-    public static void main(String[] args) throws Exception {
-        Client client = new Client("127.0.0.1");
-        //System.out.print(Enter IP address: );
-        //Client client = new Client(CLI.nextline()); // IPv4: localhost - 127.0.0.1, LAN - 192.168.x.x
-        client.init();
-    }
 
     public Client(String Address) throws Exception {
         socket = new Socket(Address, 59059);

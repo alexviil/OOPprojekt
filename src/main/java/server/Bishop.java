@@ -1,18 +1,19 @@
-import java.util.ArrayList;
-import java.util.Arrays;
+package server;
 
-public class Rook extends Piece {
-    public Rook(int color, int[] pos) {
+import java.util.ArrayList;
+
+public class Bishop extends Piece {
+    public Bishop(int color, int[] pos) {
         super(color, pos);
     }
 
     @Override
     public ArrayList<int[]> allPossibleMoves(Tile[][] board) {
-        return super.allStraightLineMoves(board);
+        return super.allDiagonalLineMoves(board);
     }
 
     @Override
     public String toString() {
-        return this.getColor()==1 ? "r" : "R";
+        return this.getColor()==1 ? "b" : "B";
     }
 }

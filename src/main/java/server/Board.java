@@ -1,5 +1,6 @@
+package server;
+
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class Board {
     private Tile[][] board;

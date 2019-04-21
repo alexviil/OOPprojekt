@@ -1,5 +1,4 @@
-import java.util.ArrayList;
-import java.util.Arrays;
+package server;
 
 public class Tile {
     private Piece currentPiece;

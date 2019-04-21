@@ -1,4 +1,4 @@
-import java.util.ArrayList;
+package server;
 
 public class Chess {
     Player currentPlayer;
