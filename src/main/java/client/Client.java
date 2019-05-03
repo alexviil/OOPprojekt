@@ -1,86 +1,102 @@
 package client;
 
-import java.io.PrintStream;
-import java.io.PrintWriter;
-import java.util.Scanner;
+import javafx.application.Platform;
+
+import java.io.*;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
-public class Client {
-    private Socket socket;
-    private Scanner input;
-    private Scanner CLI;
-    private PrintWriter output;
+public class Client implements Runnable {
+    private BufferedReader input;
+    private BufferedWriter output;
+    private String line;
+    private GUI gui;
 
-    public Client(String Address) throws Exception {
-        socket = new Socket(Address, 59059);
-        input = new Scanner(socket.getInputStream());
-        CLI = new Scanner(System.in);
-        output = new PrintWriter(socket.getOutputStream(), true);
+    private String lastUpdate;
+
+    public Client(String ipAddress, GUI gui) throws IOException {
+        Socket socket = new Socket(ipAddress, 59059);
+        this.input = new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));
+        this.output = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), StandardCharsets.UTF_8));
+        this.gui = gui;
     }
 
-    public void init() throws Exception {
-        try {
-            String response = input.nextLine();
-            String colour = response.equals("w") ? "White" : "Black";
-            System.out.println("You are player " + colour + ".");
-            while (input.hasNextLine()) {
-                response = input.nextLine();
-                if (response.startsWith("VM")) {
-                    System.out.println("Valid move");
-                } else if (response.startsWith("IM")) {
-                    System.out.print("Invalid move, try again: ");
-                    output.println(CLI.nextLine());
-                } else if (response.startsWith("OPM")) {
-                    System.out.println("Opponent moved piece " + response.substring(4, 12));
-                    for (String s : response.substring(15).split("&")) {
-                        System.out.println(s);
+    public void run() {
+        while (true) {
+            try {
+                if ((line = input.readLine()) != null) {
+                    if (line.startsWith("MSG")) {
+                        gui.writeToConsole(new SimpleDateFormat("HH:mm:ss").format(new Date()) + " - SERVER: " + line.substring(4));
+                    } else if (line.startsWith("PMSGR")) {
+                        gui.writeToConsole(new SimpleDateFormat("HH:mm:ss").format(new Date()) + " - OPPONENT: " + line.substring(5));
+                    } else if (line.startsWith("VM")) {
+                        gui.writeToConsole(new SimpleDateFormat("HH:mm:ss").format(new Date()) + " - SERVER: Valid move!");
+                        gui.setInputDisable(true);
+                    } else if (line.startsWith("OPM")) {
+                        gui.writeToConsole(new SimpleDateFormat("HH:mm:ss").format(new Date()) + " - SERVER: Opponent moved piece " + line.substring(4, 12) + ".");
+                        gui.setInputDisable(false);
+                    } else if (line.startsWith("IM")) {
+                        gui.writeToConsole(new SimpleDateFormat("HH:mm:ss").format(new Date()) + " - SERVER: Invalid move, try again.");
+                        gui.setInputDisable(false);
+                    } else if (line.startsWith("UC")) {
+                        gui.writeToConsole(new SimpleDateFormat("HH:mm:ss").format(new Date()) + " - SERVER: Unrecognized command! you shouldn't be seeing this in the GUI :^)");
+                        gui.setInputDisable(false);
+                    } else if (line.startsWith("OB")) {
+                        gui.writeToConsole(new SimpleDateFormat("HH:mm:ss").format(new Date()) + " - SERVER: Move out of bounds, try again.");
+                        gui.setInputDisable(false);
+                    } else if (line.startsWith("GM")) {
+                        lastUpdate = line.substring(3);
+                        Platform.runLater(() -> gui.updateGamefield(lastUpdate)); // runs the update on the javaFX thread instead of this thread
+                    } else if (line.equals("VCT")) {
+                        gui.writeToConsole(new SimpleDateFormat("HH:mm:ss").format(new Date()) + " - SERVER: You WON!");
+                        gui.setInputDisable(true);
+                        break;
+                    } else if (line.startsWith("DFT")) {
+                        gui.writeToConsole(new SimpleDateFormat("HH:mm:ss").format(new Date()) + " - SERVER: Opponent moved piece " + line.substring(4, 12) + ".");
+                        gui.writeToConsole(new SimpleDateFormat("HH:mm:ss").format(new Date()) + " - SERVER: You LOST...");
+                        gui.setInputDisable(true);
+                        break;
+                    } else if (line.equals("TIE")) {
+                        gui.writeToConsole(new SimpleDateFormat("HH:mm:ss").format(new Date()) + " - SERVER: It's a TIE.");
+                        gui.setInputDisable(true);
+                        break;
+                    } else if (line.equals("OCPT")) {
+                        gui.writeToConsole(new SimpleDateFormat("HH:mm:ss").format(new Date()) + " - SERVER: Other client process terminated.");
+                        gui.setInputDisable(true);
+                        break;
+                    } else if (line.equals("INIT")) {
+                        gui.setInputDisable(false);
+                    } else if (line.equals("w")) {
+                        gui.writeToConsole(new SimpleDateFormat("HH:mm:ss").format(new Date()) + " - SERVER: You are player color: WHITE (bottom).");
+                    } else if (line.equals("b")) {
+                        gui.writeToConsole(new SimpleDateFormat("HH:mm:ss").format(new Date()) + " - SERVER: You are player color: BLACK (top).");
                     }
-                    System.out.print("Command: ");
-                    output.println(CLI.nextLine());
-                } else if (response.startsWith("MSG")) {
-                    System.out.println(response.substring(4));
-                } else if (response.startsWith("PMSG")) {
-                    if (response.charAt(4) == 'S') {
-                        System.out.println("You wrote: " + response.substring(5));
-                        System.out.print("Command: ");
-                        output.println(CLI.nextLine());
-                    } else {
-                        System.out.println("Opponent wrote: " + response.substring(5));
-                    }
-                } else if (response.startsWith("UC")) {
-                    System.out.print("Unrecognized command, try again: ");
-                    output.println(CLI.nextLine());
-                } else if (response.startsWith("OB")) {
-                    System.out.print("Move out of bounds or wrong format, try again: ");
-                    output.println(CLI.nextLine());
-                } else if (response.startsWith("GM")) {
-                    for (String s : response.substring(3).split("&")) {
-                        System.out.println(s);
-                    }
-                } else if (response.equals("VCT")) {
-                    System.out.println("You won!");
-                    break;
-                } else if (response.startsWith("DFT")) {
-                    System.out.println("Opponent moved piece " + response.substring(4, 12));
-                    System.out.println("You lost.");
-                    break;
-                } else if (response.equals("TIE")) {
-                    System.out.println("It's a tie.");
-                    break;
-                } else if (response.equals("OCPT")) {
-                    System.out.println("Other client process terminated.");
-                    break;
-                } else if (response.equals("INIT")) {
-                    System.out.print("Command: ");
-                    output.println(CLI.nextLine());
                 }
+            } catch (IOException e) {
+                System.err.println(e.getMessage());
+                break;
             }
-            System.out.println("Local process terminated.");
-            output.println("QUIT");
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            socket.close();
+        }
+    }
+
+    public void sendMove(String move) {
+        try {
+            output.write("VM " + move + "\n");
+            output.flush();
+        } catch (IOException e) {
+            gui.writeToConsole(new SimpleDateFormat("HH:mm:ss").format(new Date()) + " - CLIENT: Failed to send move.");
+        }
+    }
+
+    public void sendMSG(String msg) {
+        try {
+            output.write("MSG " + msg + "\n");
+            output.flush();
+            gui.writeToConsole(new SimpleDateFormat("HH:mm:ss").format(new Date()) + " - You: " + msg + "\n");
+        } catch (IOException e) {
+            gui.writeToConsole(new SimpleDateFormat("HH:mm:ss").format(new Date()) + " - CLIENT: Failed to send message.");
         }
     }
 }

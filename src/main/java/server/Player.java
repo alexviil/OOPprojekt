@@ -36,7 +36,7 @@ public class Player implements Runnable {
             opponent.output.println(chess);
             output.println(chess);
             output.println("MSG White starts first. White is lowercase, black is uppercase.");
-            opponent.output.println("MSG White starts first. White is lowercase, black is uppercase.");
+            opponent.output.println("MSG White starts first.");
             opponent.output.println("INIT");
         }
     }

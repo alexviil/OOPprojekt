@@ -1,8 +1,8 @@
 package client;
 
 import javafx.application.Application;
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
@@ -16,9 +16,19 @@ import javafx.stage.Stage;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-
+import java.util.HashMap;
+import java.util.Map;
 
 public class GUI extends Application {
+    private GridPane gamefield;
+    private Button submitButton;
+    private TextField commandLine;
+    private TextArea textConsole;
+    private Client client;
+
+    private String moveOrigin = null;
+    private String moveDestination = null;
+    private Map<Character, Character> CLIcharToGUIchar;
 
     public static void main(String[] args) {
         launch(args);
@@ -26,7 +36,6 @@ public class GUI extends Application {
 
     public void start(Stage mainStage) throws Exception {
 
-        final Client[] client = new Client[1]; // Need one element final arrays for communication with eventhandlers
         final String[] address = new String[1];
 
         /*
@@ -36,20 +45,22 @@ public class GUI extends Application {
         HBox gameBorder = new HBox();
         BorderPane console = new BorderPane();
 
-        TextField commandLine = new TextField();
-        TextArea incomingText = new TextArea(new SimpleDateFormat("HH:mm:ss").format(new Date()) + " - SERVER: welcom 2 ches\n");
-        incomingText.setEditable(false);
+        this.commandLine = new TextField();
+        textConsole = new TextArea(new SimpleDateFormat("HH:mm:ss").format(new Date()) + " - SERVER: Connection established\n");
+        textConsole.setEditable(false);
+        // On text append scrolls to bottom
+        textConsole.textProperty().addListener((obs, oldVal, newVal) -> textConsole.setScrollTop(Double.MIN_VALUE));
 
         VBox commandLineAndButtons = new VBox();
         HBox submitDisconnectButtons = new HBox();
 
-        Button submitButton = new Button("Submit");
+        this.submitButton = new Button("Submit");
         submitButton.setMinWidth(55);
-        submitButton.setOnMouseClicked(me -> writeToConsole(commandLine, incomingText));
+        submitButton.setOnMouseClicked(me -> writeToConsole());
 
         commandLine.setOnKeyPressed(me -> {
             if (me.getCode().equals(KeyCode.ENTER)) {
-                writeToConsole(commandLine, incomingText);
+                writeToConsole();
             }
         });
 
@@ -60,35 +71,64 @@ public class GUI extends Application {
         submitDisconnectButtons.getChildren().addAll(submitButton, disconnectButton);
         commandLineAndButtons.getChildren().addAll(commandLine, submitDisconnectButtons);
 
-        console.setCenter(incomingText);
+        console.setCenter(textConsole);
         console.setBottom(commandLineAndButtons);
 
-        int rowCounter = 0;
-        int unicodeCounter = 0;
-        String[] initialBoard = new String[]{
-                "\u265C", "\u265E", "\u265D", "\u265B", "\u265A", "\u265D", "\u265E", "\u265C",
-                "\u265F", "\u265F", "\u265F", "\u265F", "\u265F", "\u265F", "\u265F", "\u265F",
-                " ", " ", " ", " ", " ", " ", " ", " ",
-                " ", " ", " ", " ", " ", " ", " ", " ",
-                " ", " ", " ", " ", " ", " ", " ", " ",
-                " ", " ", " ", " ", " ", " ", " ", " ",
-                "\u2659", "\u2659", "\u2659", "\u2659", "\u2659", "\u2659", "\u2659", "\u2659",
-                "\u2656", "\u2658", "\u2657", "\u2655", "\u2654", "\u2657", "\u2658", "\u2656"
-        };
+        char[] rowChars = new char[]{'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'};
+        char[] colChars = new char[]{'1', '2', '3', '4', '5', '6', '7', '8'};
 
-        GridPane gamefield = new GridPane();
+        char[][] initialBoard = new char[][]{
+                //             A         B         C         D         E         F         G         H
+                new char[]{'\u265C', '\u265E', '\u265D', '\u265B', '\u265A', '\u265D', '\u265E', '\u265C'}, // 1
+                new char[]{'\u265F', '\u265F', '\u265F', '\u265F', '\u265F', '\u265F', '\u265F', '\u265F'}, // 2
+                new char[]{' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},                                         // 3
+                new char[]{' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},                                         // 4
+                new char[]{' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},                                         // 5
+                new char[]{' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},                                         // 6
+                new char[]{'\u2659', '\u2659', '\u2659', '\u2659', '\u2659', '\u2659', '\u2659', '\u2659'}, // 7
+                new char[]{'\u2656', '\u2658', '\u2657', '\u2655', '\u2654', '\u2657', '\u2658', '\u2656'}};// 8
+
+        CLIcharToGUIchar = new HashMap<>(Map.of(
+                ' ', ' ',
+                'R', '\u265C',
+                'K', '\u265E',
+                'B', '\u265D',
+                'Q', '\u265B',
+                'C', '\u265A',
+                'P', '\u265F',
+                'r', '\u2656',
+                'k', '\u2658',
+                'b', '\u2657')); // Map.of supports up to 10 K,V pairs, no idea why
+        CLIcharToGUIchar.put('q', '\u2655');
+        CLIcharToGUIchar.put('c', '\u2654');
+        CLIcharToGUIchar.put('p', '\u2659');
+
+
+        this.gamefield = new GridPane();
         Button[][] tiles = new Button[8][8];
-        for (Button[] row : tiles) {
-            for (Button button : row) {
-                button = new Button();
-                button.setMinSize(28, 28);
-                button.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
-                button.setText(initialBoard[unicodeCounter]);
-                gamefield.addColumn(rowCounter, button);
-                rowCounter++;
-                unicodeCounter++;
+        for (int i = 0; i < tiles.length; i++) {
+            for (int j = 0; j < tiles[i].length; j++) {
+                //tiles[i][j] = new Button(Character.toString(initialBoard[i][j]));
+                tiles[i][j] = new Button(" ");
+                tiles[i][j].setMinSize(28.0, 28.0);
+                tiles[i][j].setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
+                tiles[i][j].setAccessibleHelp(new String(new char[]{rowChars[j], colChars[i]})); // button coords
+
+                final String tempString = tiles[i][j].getAccessibleHelp();
+
+                tiles[i][j].setOnMouseClicked(me -> {
+                    if (moveOrigin == null) {
+                        moveOrigin = tempString;
+                    } else {
+                        moveDestination = tempString;
+                        client.sendMove(moveOrigin + moveDestination);
+                        moveOrigin = null;
+                        moveDestination = null;
+                    }
+                });
+
+                gamefield.addRow(i, tiles[i][j]);
             }
-            rowCounter = 0;
         }
 
         gameBorder.getChildren().addAll(gamefield, console);
@@ -134,7 +174,7 @@ public class GUI extends Application {
         submit.setOnMouseClicked(me -> {
             address[0] = addressField.getText();
             try {
-                client[0] = new Client(addressField.getText());
+                this.client = new Client(address[0], this);
                 addressStatus.setFill(Color.BLACK);
                 addressStatus.setText("Connected");
                 windowBorder.setCenter(gameBorderContainer);
@@ -143,17 +183,21 @@ public class GUI extends Application {
                 mainStage.setWidth(800);
                 mainStage.setMinWidth(800);
                 submitDisconnectButtons.setSpacing(300.0);
-                // TODO get sout stream from client
+                setInputDisable(true);
+
+                new Thread(client).start(); // creates a new and separate thread that runs concurrently to the GUI thread
+                                            // AKA the holy grail in this spaghetti code mania
+
             } catch (Exception ignored) {
                 addressStatus.setFill(Color.RED);
                 addressStatus.setText("Could not connect");
             }
         });
 
-        HBox buttons = new HBox();
-        buttons.setSpacing(150);
-        buttons.getChildren().addAll(exit, submit);
-        ipaddressWindow.setBottom(buttons);
+        HBox introButtons = new HBox();
+        introButtons.setSpacing(150);
+        introButtons.getChildren().addAll(exit, submit);
+        ipaddressWindow.setBottom(introButtons);
 
         Scene WindowScene = new Scene(windowBorder, 300, 150);
 
@@ -162,7 +206,7 @@ public class GUI extends Application {
         mainStage.widthProperty().addListener((obs, oldWidth, newWidth) -> {
             marginLeft.setWidth(newWidth.doubleValue() / 12.0);
             marginRight.setWidth(newWidth.doubleValue() / 12.0);
-            buttons.setSpacing(newWidth.doubleValue() - marginLeft.getWidth() - marginRight.getWidth() - submit.getWidth() - exit.getWidth());
+            introButtons.setSpacing(newWidth.doubleValue() - marginLeft.getWidth() - marginRight.getWidth() - submit.getWidth() - exit.getWidth());
             submitDisconnectButtons.setSpacing(commandLine.getWidth() - submitButton.getWidth() - disconnectButton.getWidth());
             gameBorder.setScaleX(newWidth.doubleValue() / 800.0);
             });
@@ -185,10 +229,63 @@ public class GUI extends Application {
         mainStage.show();
     }
 
-    public static void writeToConsole(TextField commandLine, TextArea incomingText) {
-        if (!commandLine.getText().trim().isBlank()) {
-            incomingText.setText(incomingText.getText() + commandLine.getText() + "\n");
-            commandLine.setText("");
+    public void writeToConsole() {
+        // Used by submit button and pressing enter on commandLine
+        if (!commandLine.getText().trim().isBlank() && !submitButton.isDisabled() && !commandLine.isDisabled()) {
+           client.sendMSG(commandLine.getText());
+           commandLine.setText("");
+        }
+    }
+
+    public void writeToConsole(String text) {
+        textConsole.appendText(text + "\n");
+    }
+
+    public void setInputDisable(boolean bool) {
+        gamefield.setDisable(bool);
+        submitButton.setDisable(bool);
+        commandLine.setDisable(bool);
+    }
+
+            /*
+        +    A   B   C   D   E   F   G   H    +
+           ---------------------------------
+        1  | R | K | B | Q | C | B | K | R |  1
+           |-------------------------------|
+        2  | P | P | P | P | P | P | P | P |  2
+           |-------------------------------|
+        3  |   |   |   |   |   |   |   |   |  3
+           |-------------------------------|
+        4  |   |   |   |   |   |   |   |   |  4
+           |-------------------------------|
+        5  |   |   |   |   |   |   |   |   |  5
+           |-------------------------------|
+        6  |   |   |   |   |   |   |   |   |  6
+           |-------------------------------|
+        7  | p | p | p | p | p | p | p | p |  7
+           |-------------------------------|
+        8  | r | k | b | q | c | b | k | r |  8
+           ---------------------------------
+        +    A   B   C   D   E   F   G   H    +
+         */
+
+    public void updateGamefield(String newGameField) {
+        String[] rows = newGameField.split("&");
+        String[][] importantRows = new String[][]{
+                rows[2].substring(5, 34).split(" \\| "), rows[4].substring(5, 34).split(" \\| "),
+                rows[6].substring(5, 34).split(" \\| "), rows[8].substring(5, 34).split(" \\| "),
+                rows[10].substring(5, 34).split(" \\| "), rows[12].substring(5, 34).split(" \\| "),
+                rows[14].substring(5, 34).split(" \\| "), rows[16].substring(5, 34).split(" \\| ")
+        };
+
+        for (int column = 0; column < importantRows.length; column++) {
+            for (int row = 0; row < importantRows[column].length; row++) {
+                for (Node button : gamefield.getChildren()) {
+                    ((Button) button).setText(
+                            Character.toString(CLIcharToGUIchar.get(importantRows[GridPane.getRowIndex(button)][GridPane.getColumnIndex(button)].charAt(0)))
+                    );
+                }
+            }
         }
     }
 }
