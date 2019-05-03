@@ -1,3 +1,20 @@
+ /*
+ |  CLI version of client, it handles communication with the server and gets input from the user via the command line.
+ |  Mostly fool-proof.
+ |
+ |  List of commands:
+ |                    * VM A, X, B, Y - Valid Move: A, B are letters a-h (case-insensitive) and X, Y are numbers 1-8.
+ |                      A and X mark the origin tile, B and Y mark the destination tile. The server will look for the
+ |                      aforementioned alphanumeric characters If it cannot find at least two of each, it will ask for
+ |                      input again. Examples: VM A7 to A5, VM A7A5 and VM A7 woosh A5 are equivalent.
+ |
+ |                    * MSG {msg} - Message: sends a message to the opposing player. Warning: no profanity filter.
+ |
+ |                    * GM - Game Map: reprints the current state of the game via query to the server.
+ |
+ |                    * QUIT - Quit: closes the connection between this client instance and the server.
+*/
+
 package client_OLD;
 
 import java.io.*;
@@ -10,14 +27,18 @@ public class ClientCLI {
     private Scanner CLI;
     private PrintWriter output;
 
-    public ClientCLI(String Address) throws Exception {
+    private ClientCLI(String Address) throws Exception {
+        // Constructor used in the main method.
+
         socket = new Socket(Address, 59059);
         input = new Scanner(socket.getInputStream());
         CLI = new Scanner(System.in);
         output = new PrintWriter(socket.getOutputStream(), true);
     }
 
-    public void init() throws Exception {
+    private void init() throws Exception {
+        // Initialization, creates the main loop which exchanges information between the user and the server.
+
         try {
             String response = input.nextLine();
             String colour = response.equals("w") ? "White" : "Black";
@@ -83,7 +104,10 @@ public class ClientCLI {
         }
     }
 
-    public static void main(String[] args) throws Exception{
+    public static void main(String[] args) throws Exception {
+        // Simple main method to ask the user for an IP-address, create a new ClientCLI to connect to that address and
+        // initialize client.
+
         System.out.print("Enter IP-address: ");
         new ClientCLI(new Scanner(System.in).nextLine()).init();
     }

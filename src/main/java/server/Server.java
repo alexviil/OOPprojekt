@@ -1,3 +1,8 @@
+  /*
+  |  Server. Creates an instance of the game object, two threads of Player(handles user input) and keeps them updated.
+  |  First client to connect is white (and starts first) while second is black.
+*/
+
 package server;
 
 import java.net.ServerSocket;

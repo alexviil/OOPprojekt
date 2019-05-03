@@ -1,3 +1,146 @@
+ /*
+ |  GUI version of client, it handles communication with the server and gets input from the user via interaction with
+ |  the graphical user interface. Straightforward.
+ |
+ |  Moving pieces: To move a piece, you must first click on the origin tile (where the piece is) and then click on the
+ |                 tile you wish to move the piece to. If the move is valid, the game state will be updated and it will
+ |                 be the opponent's turn to play. If the move is not valid, the server will ask you to try again.
+ |
+ |  Messaging: You can only message while it is your turn. This is to limit taunting and negative psychological effects
+ |             (and also maybe just a tiny bit because of technical limitations in the old version and the motive of
+ |             retaining backwards compatibility (so a CLI client can play with a GUI client)).
+ |             To message your opponent, simply write up your message in the text field below the console and either
+ |             click the Submit button or press the enter key on your keyboard while the text field is in focus.
+ |
+ |  Quitting:
+ |......................................................................................................................
+ |                 .;'.                      ..............               .',.             '
+ |                .;.                    ...'',,,,,;,;;;::;,''.            .';.            '
+ |               .;'                   ..,''.....''''',,'..',:;..           ..;.           '
+ |               .,.                  .,,'.......''..........',::.           .';.          '
+ |               '.                   .,'............','.......,::.           .,;.         '
+ |              .'.                   ';,'.........''''''........,;.          ..:.         '
+ |              .'.                   .';,''''..................',;'           .;,         '
+ |              .'.                     ...',..'................',;'           .;;         '
+ |              .'                         .',',,''''''','''''..',,.           .;;.        '
+ |              ',..    ..                   ...''..',;;''...';:,'.            .;;         '
+ |              .,'...............                  ..'''''',;;'.              .;,         '
+ |               ..       ............                ..''.....                .;'         '
+ |                         ...........                 ...                     ';.         '
+ |                         ...........       .....   ....                    ..;'          '
+ |                   .  ..............................''..                 .....           '       Clicking on the
+ |                  .......'..'.........'........',.......         ...........             '      Disconnect button
+ |                   .;:'......'''...................'''...................                '
+ |                   ..,,......'''.......       ...  ...,,'.....',,'.....                  '
+ |                     ..'.....''........     .....  ..'''........','.                     '
+ |                     ................... ........  .',,'...''......                      '
+ |                    ..  .....   ............   ..   ..''.....   ..                       '
+ |                   ... .   ........... ......  ..   .... ..... ..                        '
+ |                   .......''......... ... ...  ..    .............                       '
+ |                   ..,'............  ...........      ..,:;........                      '
+ |                    .'.......       .   .....          ';'..'...'...                     '
+ |                     .'...        .   ...              .....'......                      '
+ |                      .. .          ...                  ...........                     '
+ |                      ..          ..                     .'.......,'.                    '
+ |                      ...        ..                      ..........''.                   '
+ |                       ..  ..  ..                         ..........,,..                 '
+ |                       .      ..'.........................'.... ... ...                  '............................
+ |                         ..;:looolcc:::::::::::::::;::ccloddol:,.......                  ,
+ |                   ....':loolc:::::::cccccccccccclcc:::;;;:cldxxdl;........              ,
+ |                 ....;ldoc:::::loooooooolc:lk0kllxkxooddolcc:::coxkxl,.........          ,
+ |               ....;odoc:::ccccccldxxxdooocldxdccoxolloollxxolc:;:cokko,.........        ,
+ |            .....'lxoc:cclocccldooOXNXOdddlloddo;;clc:colcoo:cllc::;:oOkc............    ,
+ |         .......,dxl::loolcclclooox0K0kxddxoccdxllddc;lxo::::cccllol;:lk0o............   ,
+ |        .......;xkl;;ldlodoollc::::looxkxodddoddx0X0dlllccl::llllcldo;;lk0l............. ,
+ |     .........,xkl::cllclllccooc:cccokxxO0OO0KKOxk0OxdoddolldOkl:::lxo;;lOO:............ ,
+ |   ..........'dOo:col:loxdoc:dOxdO0kO00O0KkxxkxddddxkkkOOkdx0kdllll:od:;:oOx,............;
+ |  ...........cOxlcdOdooddooollddkKNNXXXKKKOOOkkxkOxodxO0Okdoxxxdooocloc,,cx0l'...........;
+ | ...........'dOoclkOxdxkKKK0xdxO0KK0O0O0KXKKKK0kkkdxOO0KOxdx0KK0kolooll,';lOk:'''........;
+ |............;kko:cdkddk0NWWN0kOKK0OkddxkkkxdddxxxxxOXXKxlldOXWWN0xlolcl;',:d0d,''''......;
+ |............:Okl:codxxxkKKKOOxdOKKK0Okkxdddooodoccdxk00xlllx0KX0kololl:'.';ckk:','''.....;
+ |..........''cOkl:ldxO0xoodololcodxxkOkxllxKXK00d::odok0kl::coxkdollcc:'..';ckOc,,,''''...:
+ |.........'''cOkoclxxddxl:lxdl:;:llldkkdllxOKK00Ododxxk0Oo::cllc:cc:;,....,ck0k:,,,,,''''.:
+ |.......''''':kOoc:oxollc:okxc;;lolokkkdlodxk0KK0kkkkdloxdc;;:;,,,,,.....,colll:;;;,,,'''.:
+ |......'''',,;xOdc:odllc;;cc:;:ldoodOOkxdddxkO0000Oxoc;;co:'''''.......',cl'..;::;;;,,,,''c       Clicking the "X"
+ |.....''',,,,;o0koccllcccclodxxxocccokdoddddddxdolllc;;;:,............'',c:....';::;;;,,,'c  Button in the window frame
+ |....''',,,,;;ckOdl:;:::ldxolllllc:;cdlloddolodxo::::::;'............',;cdd;.....,::;;;,,'c
+ |....''',,,;;::oOkoc:,,ldoc,'..'',;:odoool:;:looc;:;;,................';lxkd;.....,::;;;,,c
+ |...''',,,;;:::cdOkoc;:ddoc;,'...,;cloocc;,;::;,.....  .  ............',:coxo,.....'::;;;,l
+ |..''',,;;;:::cclx0koc:oxdl:;,'',,;cc:ll;,;,......       ..............',;:od:......'::;;,l
+ |.''',,,;;:::cccllx0koc:coddlc::;:c::c:,,;,.......    ...   ............'',cdl......,:::;;l
+ |.''',,,;;::ccccllox0koc;,;:cllc;cccl;.,'';'....'.          .............',col:;:;:ccc:::;l
+ |.'',,,;;:::ccclloook0kl:;'..';cloll:..,'';'.....           ..............,:c:;coollccc::;l
+ |.'',,;;;::ccclllooodk0xl;,'....,lo:......,'                ..............,:;,,:odlllcc::;l
+ |'',,,;;:::ccllloooddxOOd:,''....;o;.....',.               ..............':c;;cdxoollccc:;o
+ |'',,,;;:::cclloooodddk0kc;,'.....cc.....''...              .............'::,,;oxoollccc::o
+ |'',,,;;::cclllooodddxxOOo:,'.....,c'....'......   ...       ............',,';oxdoolllccc:o
+ |'',,;;:::ccllloodddxxxO0d:,'......:;...'........  .......................''';oxdooollccc:o
+ |',,,;;::ccllooodddxxxxO0kc,''.....,:..''....................................':dxooolllcc:o
+ |......'''',,,,;;;;;:::cc:'........',..''.........................          ...,;;,,,,,''.c............................
+ |               .............,;cldxkkkkkkxxxxxxxxxxxxxxxxdl:,...                          '
+ |             ..........';coxkOOkkkxxxxxxxxxxxxxxxxddxxxkO0K0Oxo:'.....                   '
+ |          ..........,coxkOkxxxxkOOO00000OO0K0000K0OOOOkxxxxkOKK0Odc,'........            '
+ |     .............,cdkOkkkkkkOKKKXXKKKKK00XNXKKXNNXXXNXKKK0OkkkO0KKkoc:;,'....           '
+ |   .........''',,cxOkkkkOOO00000KXNNNXXXKKXXKK00KKKKXKKKXNXKK0OkkO0XX0dl:,......         '
+ | .........',,;;cdOOkkOOO00O00KXKXWWMMWNNKKKXXXK00KKKKXXKKXK0KKKKK000KXKxlc;'''....       '
+ |........',;;::lk0OOk0K0K00K0O000KXNNNNNNXXXXNNXXNNXXXNXKKKKKXXXXNNK000XXkll:,,'.....     ,
+ |.......',;:ccoO0OOO0K00KKKK00000O0KKXNNNNNNNNWWWWWWWWNNNNNXNWNNNNNNX00KXXkol:;,''......  ,
+ |......',;:cclOK0O0KKKKXXKK00XXKKKKXNWWWWWWWWWWWMWWWWWWWWWWWWWWNNWWWWX00KXKdll:;,,''..... ,
+ |......',;:ccxK000XXKXNNXXXKKNNXNWWWWMWMMWWWWWWWWWWWWWWWWWWWWNNNNWWWNX0O0KXOool:;;,,'.....,
+ |......',;:co0K00XWNNNNNNXNXXNNNWMMMMMMMMMMMMMMMMMMMMMMMWWWWWNNNNNNNNX0kO0KXkooc::;;,''...;
+ |.....',,;:cxKK00XWNNWNWWWWWWWWWMMMMMMMMMMMMMMMMMMMMMMMMWWWWWWWWWNNNNNKOOO0X0xdolcc:;;,''.:
+ |....',,;;:ckX000KNNNNWWWMMMWWWMMMMMMMMMMMMMMMMMMMMMMMMWWWWWWMMMWWNNNXKOkkOKXOdxdoll::;,'.:
+ |'''',,;;:clOXK00XNNNNNNWWNNNNNWWMMWMMMMMMMMMWWWWWWWWWWWWWNNNWWNNNNNNNKOOkk0X0kkxddolc:;,'c       Unplugging your
+ |''',,;;::clOX000XNNWWNXXK00K0KXNWWWMMWWMMMMMMMWWWWWWWWWWWNNNNNXXXXXXKOkxxOKNKkkkxddolc;;,c    computer from the wall
+ |'''',,;::clkX0OO0NXKNX00XNK0KKXXXNWWWWWWWWWWMMWWWWWWWWWNNNNXKKKK00Okxdodx0XX0kkxxddolc:;,l
+ |..'',,;::ccxKKOkOKK0K0OOXXKKKKXXXNWWWWWWWWWWWWMMWWWNNNNXXKK0000OkxdolloxOxdxkxxxxddolc::,l
+ |.''',;;::ccdKK0Ok0KO0OkOKK0KKXKKXXNWWWWWWWWWWWWWWNXKK0K0kkxddooooolllldko:::coddddollc::;l
+ |'''',;;::cclOXKOkkO0000KXXXNNXK000KXKXNNNNNNNXXKXK0O00kdoolccccccllooldko::;,:loooollc::;l
+ |''',,;::ccllxKXK0OkkkO00OxxxdxkkkO0K0XXXXXXXNXKKKK00Oxolcc:::;;;:::coxOK0dl:;,;collllc::;l
+ |.',,;;::cllodONXK0kod0Okdlc:::cldk0KKKKOkO00OOkkkkxdlcc:;;;,,,,,,,,;cox0K0dl:;,,:llllc::;l
+ |.',,;;:cloddxk0XX0kdkK0Okooc:::ldkkO0Okxkkxdollccclc;;;,,,,''''...',;:ldk0klc;,'';ccccc:;l
+ |.',,;:ccloddddx0XKOxxOK0OkdocllldxxkOxodocccc:;;;;::,''''..........'';:cokOl;;''..,c::c:;l
+ |.',;;:ccloodddxx0XKOkddxO0Okkxdxxdkxoollc,;;;:;'''',,................',;cxOo;;,',;:cccc:;l
+ |.',,;:cclooddxxxk0XX0kdlclloxdxkxkx:co:cl,,;,,'....''...........  ....',:oxdodooooolllcc:o
+ |'',;::cllooddxxkkOKNXOxoc:,,;ldkkxc,;;,:c'.................       .....':llcldxxddooollc:o
+ |',,;:cclloddxxkkOO0XNKOxl:;,'.;dd:;'.'';:...............  .       .....,::::ldkxxddoollcco
+ |...'',,;;;:::cclloooddlc;,.....,;..........                           ..,,,;clccc:::;;,,'c............................
+ |                                                                                         '
+ |.                      ..           ..  ..  .....''..         ..     .';;'.              ;
+ | .....    ......       ....         ... .'....,:dkd:'..     ....    'cdo;.             ..:
+ |   .......',;,'...       ....        .'..''.',;lxko:'..    .'..   .cdo;.              ...c
+ |.    ...',:odoc,...        .....  .....,..,'',;:cl:,'......,'. ..cxd:..             ..'',c
+ |.........';lddl:;'..         ..'.....'';:,;:ccllodocc:,..,;,..'cxd:..           ..''''...;
+ |..........',;;,''''''..       ..',;;;:codxxkOOO000OkOkxdxxdc:lxxc'...      ...'''...     ,
+ |,'...............   ............',:oodkkkkxdddxkxddddodxkkO000kl;'.......',,''.          ,
+ |c:;,'........           ...'',,;:ldkxddxxxdlccodolodlloddkO00O0Odc,',,;;;,'....          ,
+ |ooolllcc::;,'....         ...,;lxOkxdddxdddoc:loolllllloxkkkOOOOOkdc;;,,;:;;'.... .....''c
+ |c:;;;;::cclooooollcc:;,''.'',:okOxoodxdddxdddolcllccloxxxdodkkxkOOOo;;:coxxdocc:;;;,,,''.:
+ |;,'............'',;:ccloooddxOKKOxxxxddxkkkxxxdlcccdxxolccloodxxOO0OdlloxO0Oxl:,....     ,
+ |......               ..,:oxOKK000OkkkxxkOKXKOOkdloddooooooododxkO000xlccccllc;'...       ,
+ |''..................',;clx0XX0OOkdxxdoodxOK0kxdoodolcclolccllooodkO0d:;,,,,,'...         ,
+ |......................',:o0XK00kdoolc:clldxkxdo:;;clooodocllodddxk0Kxl:;,'......       . ,
+ |......               ...,oOOxkOdlllllclodxxdlc:;;;::oddxxxxdxxxxkkO0xc:;;,,,,,;,,,''.....;
+ |........              ..,dOxdxxdllodoooooolc:;,,;:cllclooddxxxxOOO00oc;,........',,;;;;;;o Not paying your power bill
+ |.........       .......':xkdodxdddxdollllc;,,;;::ccoollodoodxxk0KKKkocc:'....     .......:    for months until they
+ |;;,,''......'''''''.....'dkoloddddxxoolccc:;::llcccoxdollooodxkO0K0d:;;;;,,,'..   .......;   turn off your power and
+ |llllc:;;,,,''............:kkxdlcccloollloolc::ldooddxxdolodxxkxddxxxl,.....',;;;,........;     your pc shuts down
+ |dxxxoc:,........',;;;,;:clolcc;;cooc:;;;;,'',;colodxxxxxkxddxdlc:clol,...... ...,;;:;,...;
+ |loool:,'.......';lxkkkxo;,cccc'.';col;'.......',',:oddxxkkdlc;:lc,..,;;'.. .     ...,;::;l
+ |,,;;;,'........,lk000Oo:''cldc.   .;:'..... .......,clodlloc;'';'......';,... ...........c
+ |.........  ..;clllcllc:,..;xd,     ....           ..',;ol:cc,...''..... .';;,............,
+ |....... ..,:c:,.....'.....'l;.     ...             ..',cdl;;,''''.        ..;::;,;;;,'...,
+ |    ...,::;'.    ..........'.      ..           .....,,;odclol;..         ....:odxxo:,...,
+ |  ..,;;,..            .. .'.                .......',,,,:xkkOOc           ....,:okOko;...,
+ |.',,'.                    .',,....         ......''''',,;xKkxko.           ...',:lllcc;'.;
+ |'..                        .:c..           .......'''',:odkOdc;:'.          ......''..';,c
+ |                            ':'..         .........'';cl:'cOx,.';;.            ......  ..:
+ |                            .,:,'...  ............';cl;...,dk;...',,.                    ,
+ |                             .c:,'.............';coo:.. ...;xd.....',,..                 ,
+ |                              ';'........',;:cllol;..   ....:kl......','..               ,
+ |...............................,c:,...';clddddol:'..........;kkc;,'...',;,...............;............................
+*/
+
 package client;
 
 import javafx.application.Application;
@@ -20,73 +163,23 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class GUI extends Application {
+    // Used as attributes since certain methods and event handlers need to access them frequently.
     private GridPane gamefield;
     private Button submitButton;
     private TextField commandLine;
     private TextArea textConsole;
     private Client client;
 
+    // Used for sending move requests.
     private String moveOrigin = null;
     private String moveDestination = null;
+
+    // Used for updating the game state.
     private Map<Character, Character> CLIcharToGUIchar;
 
-    public static void main(String[] args) {
-        launch(args);
-    }
+    public static void main(String[] args) { launch(args); }
 
-    public void start(Stage mainStage) throws Exception {
-
-        final String[] address = new String[1];
-
-        /*
-        --- Chess game screen
-         */
-
-        HBox gameBorder = new HBox();
-        BorderPane console = new BorderPane();
-
-        this.commandLine = new TextField();
-        textConsole = new TextArea(new SimpleDateFormat("HH:mm:ss").format(new Date()) + " - SERVER: Connection established\n");
-        textConsole.setEditable(false);
-        // On text append scrolls to bottom
-        textConsole.textProperty().addListener((obs, oldVal, newVal) -> textConsole.setScrollTop(Double.MIN_VALUE));
-
-        VBox commandLineAndButtons = new VBox();
-        HBox submitDisconnectButtons = new HBox();
-
-        this.submitButton = new Button("Submit");
-        submitButton.setMinWidth(55);
-        submitButton.setOnMouseClicked(me -> writeToConsole());
-
-        commandLine.setOnKeyPressed(me -> {
-            if (me.getCode().equals(KeyCode.ENTER)) {
-                writeToConsole();
-            }
-        });
-
-        Button disconnectButton = new Button("Disconnect");
-        disconnectButton.setMinWidth(85);
-        disconnectButton.setOnMouseClicked(me -> System.exit(0));
-
-        submitDisconnectButtons.getChildren().addAll(submitButton, disconnectButton);
-        commandLineAndButtons.getChildren().addAll(commandLine, submitDisconnectButtons);
-
-        console.setCenter(textConsole);
-        console.setBottom(commandLineAndButtons);
-
-        char[] rowChars = new char[]{'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'};
-        char[] colChars = new char[]{'1', '2', '3', '4', '5', '6', '7', '8'};
-
-        char[][] initialBoard = new char[][]{
-                //             A         B         C         D         E         F         G         H
-                new char[]{'\u265C', '\u265E', '\u265D', '\u265B', '\u265A', '\u265D', '\u265E', '\u265C'}, // 1
-                new char[]{'\u265F', '\u265F', '\u265F', '\u265F', '\u265F', '\u265F', '\u265F', '\u265F'}, // 2
-                new char[]{' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},                                         // 3
-                new char[]{' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},                                         // 4
-                new char[]{' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},                                         // 5
-                new char[]{' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},                                         // 6
-                new char[]{'\u2659', '\u2659', '\u2659', '\u2659', '\u2659', '\u2659', '\u2659', '\u2659'}, // 7
-                new char[]{'\u2656', '\u2658', '\u2657', '\u2655', '\u2654', '\u2657', '\u2658', '\u2656'}};// 8
+    public void start(Stage mainStage) {
 
         CLIcharToGUIchar = new HashMap<>(Map.of(
                 ' ', ' ',
@@ -103,20 +196,70 @@ public class GUI extends Application {
         CLIcharToGUIchar.put('c', '\u2654');
         CLIcharToGUIchar.put('p', '\u2659');
 
+        /*
+        --- Chess game screen
+         */
+
+        HBox gameBorder = new HBox();
+        BorderPane console = new BorderPane();
+
+        // Command line and text area
+
+        this.commandLine = new TextField();
+        textConsole = new TextArea(new SimpleDateFormat("HH:mm:ss").format(new Date()) + " - SERVER: Connection established.\n");
+        textConsole.setEditable(false);
+        // On text append scrolls to bottom
+        textConsole.textProperty().addListener((obs, oldVal, newVal) -> textConsole.setScrollTop(Double.MIN_VALUE));
+
+        VBox commandLineAndButtons = new VBox();
+        HBox submitDisconnectButtons = new HBox();
+
+
+        // Submit and disconnect buttons
+
+        this.submitButton = new Button("Submit");
+        submitButton.setMinWidth(55); // Text won't disappear on resize.
+        submitButton.setOnMouseClicked(me -> writeToConsole());
+
+        commandLine.setOnKeyPressed(me -> {
+            if (me.getCode().equals(KeyCode.ENTER)) {
+                writeToConsole();
+            }
+        });
+
+        Button disconnectButton = new Button("Disconnect");
+        disconnectButton.setMinWidth(85); // Text won't disappear on resize.
+        disconnectButton.setOnMouseClicked(me -> System.exit(0));
+
+        submitDisconnectButtons.getChildren().addAll(submitButton, disconnectButton);
+        commandLineAndButtons.getChildren().addAll(commandLine, submitDisconnectButtons);
+
+        console.setCenter(textConsole);
+        console.setBottom(commandLineAndButtons);
+
+
+        // Game field
+
+        char[] rowChars = new char[]{'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'};
+        char[] colChars = new char[]{'1', '2', '3', '4', '5', '6', '7', '8'};
 
         this.gamefield = new GridPane();
         Button[][] tiles = new Button[8][8];
         for (int i = 0; i < tiles.length; i++) {
             for (int j = 0; j < tiles[i].length; j++) {
-                //tiles[i][j] = new Button(Character.toString(initialBoard[i][j]));
                 tiles[i][j] = new Button(" ");
                 tiles[i][j].setMinSize(28.0, 28.0);
                 tiles[i][j].setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
                 tiles[i][j].setAccessibleHelp(new String(new char[]{rowChars[j], colChars[i]})); // button coords
 
-                final String tempString = tiles[i][j].getAccessibleHelp();
+                // TODO QOL improvement - chess notation symbols to recognize opponent movements easier
+
+                // Used to pass the button's metadata to the event handler. Cannot use tiles[i][j] as i and j are not
+                // final nor objects.
+                String tempString = tiles[i][j].getAccessibleHelp();
 
                 tiles[i][j].setOnMouseClicked(me -> {
+                    // TODO QOL improvement - highlight selected tile
                     if (moveOrigin == null) {
                         moveOrigin = tempString;
                     } else {
@@ -131,9 +274,11 @@ public class GUI extends Application {
             }
         }
 
+        // Aligning the game scene horizontally (as gameBorder is an instance of HBox)
         gameBorder.getChildren().addAll(gamefield, console);
         gameBorder.setAlignment(Pos.CENTER);
 
+        // Creating a new VBox to align the game scene vertically
         VBox gameBorderContainer = new VBox(gameBorder);
         gameBorderContainer.setAlignment(Pos.CENTER);
 
@@ -160,33 +305,37 @@ public class GUI extends Application {
 
         TextField addressField = new TextField("127.0.0.1");
 
+        Text addressStatus = new Text("Enter IP-Address");
+
+        ipaddressWindow.setCenter(addressField);
+        ipaddressWindow.setTop(addressStatus);
+
+
         // Submit/Exit buttons
 
         Button exit = new Button("Quit");
-        exit.setMinWidth(38);
+        exit.setMinWidth(38); // Text won't disappear on resize.
         exit.setOnMouseClicked(me -> System.exit(0));
 
+
         Button submit = new Button("Submit");
-        submit.setMinWidth(55);
-        ipaddressWindow.setCenter(addressField);
-        Text addressStatus = new Text("Enter IP-Address");
-        ipaddressWindow.setTop(addressStatus);
+        submit.setMinWidth(55); // Text won't disappear on resize.
         submit.setOnMouseClicked(me -> {
-            address[0] = addressField.getText();
             try {
-                this.client = new Client(address[0], this);
-                addressStatus.setFill(Color.BLACK);
-                addressStatus.setText("Connected");
+                this.client = new Client(addressField.getText(), this); // Creates back-end that connects to server
+
+                // Switches the windowBorder's (root) center to the game screen and alters the window size accordingly
                 windowBorder.setCenter(gameBorderContainer);
                 mainStage.setHeight(450);
                 mainStage.setMinHeight(450);
                 mainStage.setWidth(800);
                 mainStage.setMinWidth(800);
                 submitDisconnectButtons.setSpacing(300.0);
-                setInputDisable(true);
+                setInputDisable(true); // Initially, the controls are disabled, but once two players connect white will
+                                       // be able to make the first move.
 
-                new Thread(client).start(); // creates a new and separate thread that runs concurrently to the GUI thread
-                                            // AKA the holy grail in this spaghetti code mania
+                new Thread(client).start(); // Creates a new and separate thread for the back-end that runs concurrently
+                                            // to the GUI thread AKA the holy grail in this spaghetti code mania.
 
             } catch (Exception ignored) {
                 addressStatus.setFill(Color.RED);
@@ -199,9 +348,9 @@ public class GUI extends Application {
         introButtons.getChildren().addAll(exit, submit);
         ipaddressWindow.setBottom(introButtons);
 
-        Scene WindowScene = new Scene(windowBorder, 300, 150);
 
-        // Width and height change listeners and handlers
+        // Width and height change listeners and handlers that change the width and height of margins, spacing between
+        // buttons and the scale of the game field and console relative to the size of the window.
 
         mainStage.widthProperty().addListener((obs, oldWidth, newWidth) -> {
             marginLeft.setWidth(newWidth.doubleValue() / 12.0);
@@ -224,52 +373,39 @@ public class GUI extends Application {
         mainStage.setMinWidth(125.0);
         mainStage.setMinHeight(125.0);
 
+        Scene WindowScene = new Scene(windowBorder, 300, 150);
         mainStage.setScene(WindowScene);
         mainStage.setTitle("Multiplayer Chess");
         mainStage.show();
     }
 
-    public void writeToConsole() {
-        // Used by submit button and pressing enter on commandLine
+    private void writeToConsole() {
+        // Used by submit button and pressing enter on commandLine, tells back-end to send commandLine's text as a MSG
+        // to the server.
+
         if (!commandLine.getText().trim().isBlank() && !submitButton.isDisabled() && !commandLine.isDisabled()) {
            client.sendMSG(commandLine.getText());
            commandLine.setText("");
         }
     }
 
-    public void writeToConsole(String text) {
+    void writeToConsole(String text) {
+        // Used by back-end, a simple method to update the console's text.
+
         textConsole.appendText(text + "\n");
     }
 
-    public void setInputDisable(boolean bool) {
+    void setInputDisable(boolean bool) {
+        // Used by back-end, a simple method to disable or enable all user inputs to the server.
+
         gamefield.setDisable(bool);
         submitButton.setDisable(bool);
         commandLine.setDisable(bool);
     }
 
-            /*
-        +    A   B   C   D   E   F   G   H    +
-           ---------------------------------
-        1  | R | K | B | Q | C | B | K | R |  1
-           |-------------------------------|
-        2  | P | P | P | P | P | P | P | P |  2
-           |-------------------------------|
-        3  |   |   |   |   |   |   |   |   |  3
-           |-------------------------------|
-        4  |   |   |   |   |   |   |   |   |  4
-           |-------------------------------|
-        5  |   |   |   |   |   |   |   |   |  5
-           |-------------------------------|
-        6  |   |   |   |   |   |   |   |   |  6
-           |-------------------------------|
-        7  | p | p | p | p | p | p | p | p |  7
-           |-------------------------------|
-        8  | r | k | b | q | c | b | k | r |  8
-           ---------------------------------
-        +    A   B   C   D   E   F   G   H    +
-         */
+    void updateGamefield(String newGameField) {
+        // Called by back-end, a method to update the game field according to last update from the server.
 
-    public void updateGamefield(String newGameField) {
         String[] rows = newGameField.split("&");
         String[][] importantRows = new String[][]{
                 rows[2].substring(5, 34).split(" \\| "), rows[4].substring(5, 34).split(" \\| "),
@@ -278,8 +414,8 @@ public class GUI extends Application {
                 rows[14].substring(5, 34).split(" \\| "), rows[16].substring(5, 34).split(" \\| ")
         };
 
-        for (int column = 0; column < importantRows.length; column++) {
-            for (int row = 0; row < importantRows[column].length; row++) {
+        for (String[] importantRow : importantRows) {
+            for (int row = 0; row < importantRow.length; row++) {
                 for (Node button : gamefield.getChildren()) {
                     ((Button) button).setText(
                             Character.toString(CLIcharToGUIchar.get(importantRows[GridPane.getRowIndex(button)][GridPane.getColumnIndex(button)].charAt(0)))

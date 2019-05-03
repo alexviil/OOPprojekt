@@ -2,8 +2,8 @@
 <project version="4">
   <component name="CompilerConfiguration">
     <bytecodeTargetLevel>
-      <module name="OOPprojekt.main" target="11" />
-      <module name="OOPprojekt.test" target="11" />
+      <module name="OOPprojekt.main" target="12" />
+      <module name="OOPprojekt.test" target="12" />
     </bytecodeTargetLevel>
   </component>
 </project>

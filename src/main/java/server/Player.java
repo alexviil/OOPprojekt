@@ -1,3 +1,7 @@
+/*
+ |  Player runnable, handles user input and sends according output via Server.
+*/
+
 package server;
 
 import java.io.IOException;
@@ -15,13 +19,18 @@ public class Player implements Runnable {
     Player opponent;
     private Chess chess;
 
-    public Player(boolean isWhite, Socket socket, Chess chess) {
+    Player(boolean isWhite, Socket socket, Chess chess) {
+        // Constructor used by Server.
+
         this.isWhite = isWhite;
         this.socket = socket;
         this.chess = chess;
     }
 
     private void setup() throws IOException {
+        // Initialization, gets input and output streams, determines if the client represented is white or black and
+        // sends the according output to either to properly start the game.
+
         input = new Scanner(socket.getInputStream());
         output = new PrintWriter(socket.getOutputStream(), true);
         output.println(isWhite ? "w" : "b");
@@ -35,14 +44,17 @@ public class Player implements Runnable {
             opponent.opponent = this;
             opponent.output.println(chess);
             output.println(chess);
-            output.println("MSG White starts first. White is lowercase, black is uppercase.");
-            opponent.output.println("MSG White starts first.");
+            output.println("MSG Opponent starts first. ");
+            opponent.output.println("MSG Opponent connected. You start first.");
             opponent.output.println("INIT");
         }
     }
 
     @Override
     public void run() {
+        // Run, gets executed by server. Calls setup() to initialize and processEvents() to process events. If the
+        // opponent's connection gets terminated, it stops processing events and notifies the client.
+
         try {
             setup();
             processEvents();
@@ -60,7 +72,45 @@ public class Player implements Runnable {
         }
     }
 
+    private void processEvents() {
+        // Processes events: checks the input from the client and does one of the following: terminates the connection
+        // on behalf of the client's request, tries to process the client's move, tries to process the client's message
+        // or notifies the client if their message was not understood or invalid.
+
+        while (input.hasNextLine()) {
+            String event = input.nextLine();
+            if (event.equals("QUIT")) {
+                System.out.println(new java.sql.Timestamp(System.currentTimeMillis()) + " Player " + this + " Connection terminated");
+                return;
+            } else if (event.startsWith("VM")) { // VM a,x to b,y
+                try {
+                    int[] numbers = getNumbers(event);
+                    System.out.println(Arrays.toString(numbers));
+                    int origY = numbers[0];
+                    int origX = numbers[1] - 1;
+                    int destY = numbers[2];
+                    int destX = numbers[3] - 1;
+                    processMove(origX, origY, destX, destY);
+                } catch (ArrayIndexOutOfBoundsException | StringIndexOutOfBoundsException | NullPointerException e) {
+                    e.printStackTrace();
+                    output.println("OB"); // Out of bounds
+                }
+            } else if (event.startsWith("MSG")) {
+                opponent.output.println("PMSGR" + event.substring(4)); // Player Message Received
+                output.println("PMSGS" + event.substring(4)); // Player Message Sent
+            } else if (event.startsWith("GM")) {
+                output.println(chess);
+                output.println("INIT"); // Required by ClientCLI so the client can resume their turn after GM query
+            } else {
+                output.println("UC"); // Unrecognized command
+            }
+        }
+    }
+
     private void processMove(int origX, int origY, int destX, int destY) {
+        // Processes the client's move request. If it's illegal, asks the client to try again, otherwise updates the game
+        // state and tells the opponent to play.
+
         try {
             if (!isWhite && chess.isPieceWhite(origX, origY) || isWhite && !chess.isPieceWhite(origX, origY)){
                 output.println("IM");
@@ -81,54 +131,26 @@ public class Player implements Runnable {
         }
     }
 
-    private void processEvents() {
-        while (input.hasNextLine()) {
-            String event = input.nextLine();
-            if (event.equals("QUIT")) {
-                System.out.println(new java.sql.Timestamp(System.currentTimeMillis()) + " Player " + this + " Connection terminated");
-                return;
-            } else if (event.startsWith("VM")) { // VM x,y to x,y
-                try {
-                    int[] numbers = getNumbers(event);
-                    System.out.println(Arrays.toString(numbers));
-                    int origY = numbers[0];
-                    int origX = numbers[1] - 1;
-                    int destY = numbers[2];
-                    int destX = numbers[3] - 1;
-                    processMove(origX, origY, destX, destY);
-                } catch (ArrayIndexOutOfBoundsException | StringIndexOutOfBoundsException | NullPointerException e) {
-                    e.printStackTrace();
-                    output.println("OB"); // Out of bounds
-                }
-            } else if (event.startsWith("MSG")) {
-                opponent.output.println("PMSGR" + event.substring(4)); // Player Message Received
-                output.println("PMSGS" + event.substring(4)); // Player Message Sent
-            } else if (event.startsWith("GM")) {
-                output.println(chess);
-                output.println("INIT");
-            } else {
-                output.println("UC"); // Unrecognized command
-            }
-        }
-    }
-
     public String toString() {
         return isWhite ? "white" : "black";
     }
 
-    public boolean isWhite() {
+    boolean isWhite() {
         return isWhite;
     }
 
-    public String numberToLetter(int i) {
+    private String numberToLetter(int i) {
         return new String[]{"A", "B", "C", "D", "E", "F", "G", "H"}[i];
     }
 
-    public int[] getNumbers(String s) {
+    private int[] getNumbers(String s) {
+        // Finds coordinates from user input and translates them into values understood by Chess#movePiece. Used by
+        // processEvents.
+
         int[] numbers = new int[4];
         int indeks = 0;
-        ArrayList<Character> ints = new ArrayList<Character>(Arrays.asList('1', '2', '3', '4', '5', '6', '7', '8'));
-        ArrayList<Character> chars = new ArrayList<Character>(Arrays.asList('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'));
+        ArrayList<Character> ints = new ArrayList<>(Arrays.asList('1', '2', '3', '4', '5', '6', '7', '8'));
+        ArrayList<Character> chars = new ArrayList<>(Arrays.asList('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'));
         for (char c : s.toCharArray()) {
             if (indeks == 4) {
                 break;
@@ -146,7 +168,7 @@ public class Player implements Runnable {
         return numbers;
     }
 
-    public int letterToNumber(char s) {
+    private int letterToNumber(char s) {
         return (int)s - 97;
-    }
+    } // gives letter ASCII index - 97, so A starts at 0
 }

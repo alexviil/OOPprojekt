@@ -1,6 +1,6 @@
 #Objektorienteeritud Programmeerimise projekt
 
-Antud hoidla sisaldab endas aine OOP raames aine esimest projekti, mille on valmis teinud Alex Viil ja Janar
+Antud hoidla sisaldab endas aine OOP raames aine esimest (client_OLD, server) ja teist (client) projekti, mille on valmis teinud Alex Viil ja Janar
 Aava.
 
 ##Nelja dimensiooniline male
