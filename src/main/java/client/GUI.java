@@ -144,6 +144,7 @@
 package client;
 
 import javafx.application.Application;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -266,8 +267,11 @@ import java.util.concurrent.atomic.AtomicReference;
             for (int j = 0; j < tiles[i].length; j++) {
                 tiles[i][j] = new Button(" ");
                 tiles[i][j].setMinSize(35.0, 35.0); // To fit 2 characters into the button
-                tiles[i][j].setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
+                tiles[i][j].setMaxSize(35.0, 35.0);
                 tiles[i][j].setAccessibleHelp(new String(new char[]{rowChars[j], colChars[i]})); // button coords
+
+                tiles[i][j].setStyle("-fx-font-size: 20px;");
+                tiles[i][j].setPadding(Insets.EMPTY);
 
                 // Used to pass the button's metadata to the event handler. Cannot use tiles[i][j] as i and j are not
                 // final nor objects.
@@ -280,7 +284,7 @@ import java.util.concurrent.atomic.AtomicReference;
                 tiles[i][j].setOnMouseClicked(me -> {
                     if (moveOrigin == null) {
                         moveOrigin = (buttonReference.get()).getAccessibleHelp();
-                        buttonReference.get().setStyle("-fx-border-color: aqua; -fx-border-width: 2px");
+                        buttonReference.get().setStyle("-fx-font-size: 20px; -fx-border-color: aqua; -fx-border-width: 2px;");
                         highlighted = buttonReference.get();
                     } else {
                         moveDestination = (buttonReference.get()).getAccessibleHelp();
@@ -288,7 +292,7 @@ import java.util.concurrent.atomic.AtomicReference;
                         moveOrigin = null;
                         moveDestination = null;
 
-                        highlighted.setStyle("");
+                        highlighted.setStyle("-fx-font-size: 20px;"); // erasing the border along with it's width and color
                         highlighted = null;
                     }
                 });

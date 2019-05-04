@@ -8,7 +8,8 @@
   <component name="ChangeListManager">
     <list default="true" id="2af32cee-3b33-4fa1-9449-3a8cfb05a0b5" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/client/Client.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/client/Client.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/classes/client/Client.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/classes/client/Client.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/classes/client/GUI.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/classes/client/GUI.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/client/GUI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/client/GUI.java" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
@@ -52,16 +53,12 @@
     <favorites_list name="OOPprojekt" />
   </component>
   <component name="FileEditorManager">
-    <leaf>
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/java/client/GUI.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="446">
-              <caret line="457" column="13" lean-forward="true" selection-start-line="457" selection-start-column="13" selection-end-line="457" selection-end-column="13" />
-              <folding>
-                <element signature="e#0#24386#0" expanded="true" />
-                <element signature="imports" expanded="true" />
-              </folding>
+            <state relative-caret-position="-289">
+              <caret line="156" column="36" selection-start-line="156" selection-start-column="36" selection-end-line="156" selection-end-column="36" />
             </state>
           </provider>
         </entry>
@@ -120,8 +117,8 @@
     </option>
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="402" />
-    <option name="y" value="-8" />
+    <option name="x" value="66" />
+    <option name="y" value="-23" />
     <option name="width" value="1171" />
     <option name="height" value="1047" />
   </component>
@@ -133,6 +130,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="PackagesPane" />
       <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
@@ -187,14 +185,13 @@
           <select />
         </subPane>
       </pane>
-      <pane id="PackagesPane" />
     </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
-    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1556970621788" />
+    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1556971610770" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/src/main/resources" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
@@ -312,7 +309,8 @@
       <workItem from="1556819780826" duration="16288000" />
       <workItem from="1556883204279" duration="131000" />
       <workItem from="1556883825373" duration="19988000" />
-      <workItem from="1556946011690" duration="13038000" />
+      <workItem from="1556946011690" duration="13365000" />
+      <workItem from="1556980955606" duration="4090000" />
     </task>
     <task id="LOCAL-00001" summary="GUI tidied up, added comments to client, client_OLD and server, player">
       <created>1556904159712</created>
@@ -321,11 +319,18 @@
       <option name="project" value="LOCAL" />
       <updated>1556904159712</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="GUI quality of life improvements (highlights first selection, button shows coordinates on hower), simplified code, minor bug fixes. Enter key works on ip-address entry screen.">
+      <created>1556971478386</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1556971478386</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="127746000" />
+    <option name="totallyTimeSpent" value="132163000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -340,7 +345,7 @@
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.12153518" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.122068234" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Image Layers" order="2" />
       <window_info id="Designer" order="3" />
@@ -411,7 +416,8 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="GUI front-end done" />
     <MESSAGE value="GUI tidied up, added comments to client, client_OLD and server, player" />
-    <option name="LAST_COMMIT_MESSAGE" value="GUI tidied up, added comments to client, client_OLD and server, player" />
+    <MESSAGE value="GUI quality of life improvements (highlights first selection, button shows coordinates on hower), simplified code, minor bug fixes. Enter key works on ip-address entry screen." />
+    <option name="LAST_COMMIT_MESSAGE" value="GUI quality of life improvements (highlights first selection, button shows coordinates on hower), simplified code, minor bug fixes. Enter key works on ip-address entry screen." />
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/src/Male.java" />
@@ -575,12 +581,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/client/GUI.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="446">
-          <caret line="457" column="13" lean-forward="true" selection-start-line="457" selection-start-column="13" selection-end-line="457" selection-end-column="13" />
-          <folding>
-            <element signature="e#0#24386#0" expanded="true" />
-            <element signature="imports" expanded="true" />
-          </folding>
+        <state relative-caret-position="-289">
+          <caret line="156" column="36" selection-start-line="156" selection-start-column="36" selection-end-line="156" selection-end-column="36" />
         </state>
       </provider>
     </entry>
