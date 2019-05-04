@@ -61,8 +61,8 @@
  |..........''cOkl:ldxO0xoodololcodxxkOkxllxKXK00d::odok0kl::coxkdollcc:'..';ckOc,,,''''...:
  |.........'''cOkoclxxddxl:lxdl:;:llldkkdllxOKK00Ododxxk0Oo::cllc:cc:;,....,ck0k:,,,,,''''.:
  |.......''''':kOoc:oxollc:okxc;;lolokkkdlodxk0KK0kkkkdloxdc;;:;,,,,,.....,colll:;;;,,,'''.:
- |......'''',,;xOdc:odllc;;cc:;:ldoodOOkxdddxkO0000Oxoc;;co:'''''.......',cl'..;::;;;,,,,''c       Clicking the "X"
- |.....''',,,,;o0koccllcccclodxxxocccokdoddddddxdolllc;;;:,............'',c:....';::;;;,,,'c  Button in the window frame
+ |......'''',,;xOdc:odllc;;cc:;:ldoodOOkxdddxkO0000Oxoc;;co:'''''.......',cl'..;::;;;,,,,''c     Clicking the "X"
+ |.....''',,,,;o0koccllcccclodxxxocccokdoddddddxdolllc;;;:,............'',c:....';::;;;,,,'c Button in the window frame
  |....''',,,,;;ckOdl:;:::ldxolllllc:;cdlloddolodxo::::::;'............',;cdd;.....,::;;;,,'c
  |....''',,,;;::oOkoc:,,ldoc,'..'',;:odoool:;:looc;:;;,................';lxkd;.....,::;;;,,c
  |...''',,,;;:::cdOkoc;:ddoc;,'...,;cloocc;,;::;,.....  .  ............',:coxo,.....'::;;;,l
@@ -90,8 +90,8 @@
  |......',;:co0K00XWNNNNNNXNXXNNNWMMMMMMMMMMMMMMMMMMMMMMMWWWWWNNNNNNNNX0kO0KXkooc::;;,''...;
  |.....',,;:cxKK00XWNNWNWWWWWWWWWMMMMMMMMMMMMMMMMMMMMMMMMWWWWWWWWWNNNNNKOOO0X0xdolcc:;;,''.:
  |....',,;;:ckX000KNNNNWWWMMMWWWMMMMMMMMMMMMMMMMMMMMMMMMWWWWWWMMMWWNNNXKOkkOKXOdxdoll::;,'.:
- |'''',,;;:clOXK00XNNNNNNWWNNNNNWWMMWMMMMMMMMMWWWWWWWWWWWWWNNNWWNNNNNNNKOOkk0X0kkxddolc:;,'c       Unplugging your
- |''',,;;::clOX000XNNWWNXXK00K0KXNWWWMMWWMMMMMMMWWWWWWWWWWWNNNNNXXXXXXKOkxxOKNKkkkxddolc;;,c    computer from the wall
+ |'''',,;;:clOXK00XNNNNNNWWNNNNNWWMMWMMMMMMMMMWWWWWWWWWWWWWNNNWWNNNNNNNKOOkk0X0kkxddolc:;,'c      Unplugging your
+ |''',,;;::clOX000XNNWWNXXK00K0KXNWWWMMWWMMMMMMMWWWWWWWWWWWNNNNNXXXXXXKOkxxOKNKkkkxddolc;;,c   computer from the wall
  |'''',,;::clkX0OO0NXKNX00XNK0KKXXXNWWWWWWWWWWMMWWWWWWWWWNNNNXKKKK00Okxdodx0XX0kkxxddolc:;,l
  |..'',,;::ccxKKOkOKK0K0OOXXKKKKXXXNWWWWWWWWWWWWMMWWWNNNNXXKK0000OkxdolloxOxdxkxxxxddolc::,l
  |.''',;;::ccdKK0Ok0KO0OkOKK0KKXKKXXNWWWWWWWWWWWWWWNXKK0K0kkxddooooolllldko:::coddddollc::;l
@@ -161,18 +161,29 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 
-public class GUI extends Application {
-    // Used as attributes since certain methods and event handlers need to access them frequently.
+ public class GUI extends Application {
+    // Used as attributes since certain methods and event handlers need to access them.
     private GridPane gamefield;
     private Button submitButton;
     private TextField commandLine;
     private TextArea textConsole;
     private Client client;
+    // initClient
+    private TextField addressField;
+    private BorderPane windowBorder;
+    private VBox gameBorderContainer;
+    private Stage mainStage;
+    private HBox submitDisconnectButtons;
+    private Text addressStatus;
 
     // Used for sending move requests.
     private String moveOrigin = null;
     private String moveDestination = null;
+
+    // Used for tracking first click.
+    private Button highlighted;
 
     // Used for updating the game state.
     private Map<Character, Character> CLIcharToGUIchar;
@@ -180,6 +191,8 @@ public class GUI extends Application {
     public static void main(String[] args) { launch(args); }
 
     public void start(Stage mainStage) {
+
+        this.mainStage = mainStage;
 
         CLIcharToGUIchar = new HashMap<>(Map.of(
                 ' ', ' ',
@@ -212,13 +225,13 @@ public class GUI extends Application {
         textConsole.textProperty().addListener((obs, oldVal, newVal) -> textConsole.setScrollTop(Double.MIN_VALUE));
 
         VBox commandLineAndButtons = new VBox();
-        HBox submitDisconnectButtons = new HBox();
+        submitDisconnectButtons = new HBox();
 
 
         // Submit and disconnect buttons
 
         this.submitButton = new Button("Submit");
-        submitButton.setMinWidth(55); // Text won't disappear on resize.
+        submitButton.setMinWidth(55.0); // Text won't disappear on resize.
         submitButton.setOnMouseClicked(me -> writeToConsole());
 
         commandLine.setOnKeyPressed(me -> {
@@ -228,7 +241,7 @@ public class GUI extends Application {
         });
 
         Button disconnectButton = new Button("Disconnect");
-        disconnectButton.setMinWidth(85); // Text won't disappear on resize.
+        disconnectButton.setMinWidth(85.0); // Text won't disappear on resize.
         disconnectButton.setOnMouseClicked(me -> System.exit(0));
 
         submitDisconnectButtons.getChildren().addAll(submitButton, disconnectButton);
@@ -240,33 +253,43 @@ public class GUI extends Application {
 
         // Game field
 
+        this.gamefield = new GridPane();
+
         char[] rowChars = new char[]{'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'};
         char[] colChars = new char[]{'1', '2', '3', '4', '5', '6', '7', '8'};
 
-        this.gamefield = new GridPane();
         Button[][] tiles = new Button[8][8];
+
+        // For Button, we will use AccessibleHelp to remember coords and AccessibleText to remember button's text
+
         for (int i = 0; i < tiles.length; i++) {
             for (int j = 0; j < tiles[i].length; j++) {
                 tiles[i][j] = new Button(" ");
-                tiles[i][j].setMinSize(28.0, 28.0);
+                tiles[i][j].setMinSize(35.0, 35.0); // To fit 2 characters into the button
                 tiles[i][j].setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
                 tiles[i][j].setAccessibleHelp(new String(new char[]{rowChars[j], colChars[i]})); // button coords
 
-                // TODO QOL improvement - chess notation symbols to recognize opponent movements easier
-
                 // Used to pass the button's metadata to the event handler. Cannot use tiles[i][j] as i and j are not
                 // final nor objects.
-                String tempString = tiles[i][j].getAccessibleHelp();
+                AtomicReference<Button> buttonReference = new AtomicReference<>(tiles[i][j]);
+
+                tiles[i][j].setOnMouseEntered(me -> (buttonReference.get()).setText((buttonReference.get()).getAccessibleHelp()));
+
+                tiles[i][j].setOnMouseExited(me -> (buttonReference.get()).setText((buttonReference.get()).getAccessibleText()));
 
                 tiles[i][j].setOnMouseClicked(me -> {
-                    // TODO QOL improvement - highlight selected tile
                     if (moveOrigin == null) {
-                        moveOrigin = tempString;
+                        moveOrigin = (buttonReference.get()).getAccessibleHelp();
+                        buttonReference.get().setStyle("-fx-border-color: aqua; -fx-border-width: 2px");
+                        highlighted = buttonReference.get();
                     } else {
-                        moveDestination = tempString;
+                        moveDestination = (buttonReference.get()).getAccessibleHelp();
                         client.sendMove(moveOrigin + moveDestination);
                         moveOrigin = null;
                         moveDestination = null;
+
+                        highlighted.setStyle("");
+                        highlighted = null;
                     }
                 });
 
@@ -279,7 +302,7 @@ public class GUI extends Application {
         gameBorder.setAlignment(Pos.CENTER);
 
         // Creating a new VBox to align the game scene vertically
-        VBox gameBorderContainer = new VBox(gameBorder);
+        gameBorderContainer = new VBox(gameBorder);
         gameBorderContainer.setAlignment(Pos.CENTER);
 
 
@@ -288,11 +311,11 @@ public class GUI extends Application {
          */
 
         // Margins
-        BorderPane windowBorder = new BorderPane();
-        Rectangle marginTop = new Rectangle(1, 25, Color.rgb(0, 0, 0, 0));
-        Rectangle marginLeft = new Rectangle(25, 1, Color.rgb(0, 0, 0, 0));
-        Rectangle marginRight = new Rectangle(25, 1, Color.rgb(0, 0, 0, 0));
-        Rectangle marginBottom = new Rectangle(1, 25, Color.rgb(0, 0, 0, 0));
+        windowBorder = new BorderPane();
+        Rectangle marginTop = new Rectangle(1.0, 25.0, Color.rgb(0, 0, 0, 0));
+        Rectangle marginLeft = new Rectangle(25.0, 1.0, Color.rgb(0, 0, 0, 0));
+        Rectangle marginRight = new Rectangle(25.0, 1.0, Color.rgb(0, 0, 0, 0));
+        Rectangle marginBottom = new Rectangle(1.0, 25.0, Color.rgb(0, 0, 0, 0));
 
         windowBorder.setTop(marginTop);
         windowBorder.setLeft(marginLeft);
@@ -303,9 +326,9 @@ public class GUI extends Application {
         BorderPane ipaddressWindow = new BorderPane();
         windowBorder.setCenter(ipaddressWindow);
 
-        TextField addressField = new TextField("127.0.0.1");
+        addressField = new TextField("127.0.0.1");
 
-        Text addressStatus = new Text("Enter IP-Address");
+        addressStatus = new Text("Enter IP-Address");
 
         ipaddressWindow.setCenter(addressField);
         ipaddressWindow.setTop(addressStatus);
@@ -314,37 +337,22 @@ public class GUI extends Application {
         // Submit/Exit buttons
 
         Button exit = new Button("Quit");
-        exit.setMinWidth(38); // Text won't disappear on resize.
+        exit.setMinWidth(38.0); // Text won't disappear on resize.
         exit.setOnMouseClicked(me -> System.exit(0));
 
 
         Button submit = new Button("Submit");
-        submit.setMinWidth(55); // Text won't disappear on resize.
-        submit.setOnMouseClicked(me -> {
-            try {
-                this.client = new Client(addressField.getText(), this); // Creates back-end that connects to server
+        submit.setMinWidth(55.0); // Text won't disappear on resize.
+        submit.setOnMouseClicked(me -> initClient());
 
-                // Switches the windowBorder's (root) center to the game screen and alters the window size accordingly
-                windowBorder.setCenter(gameBorderContainer);
-                mainStage.setHeight(450);
-                mainStage.setMinHeight(450);
-                mainStage.setWidth(800);
-                mainStage.setMinWidth(800);
-                submitDisconnectButtons.setSpacing(300.0);
-                setInputDisable(true); // Initially, the controls are disabled, but once two players connect white will
-                                       // be able to make the first move.
-
-                new Thread(client).start(); // Creates a new and separate thread for the back-end that runs concurrently
-                                            // to the GUI thread AKA the holy grail in this spaghetti code mania.
-
-            } catch (Exception ignored) {
-                addressStatus.setFill(Color.RED);
-                addressStatus.setText("Could not connect");
+        addressField.setOnKeyPressed(me -> {
+            if (me.getCode().equals(KeyCode.ENTER)) {
+                initClient();
             }
         });
 
         HBox introButtons = new HBox();
-        introButtons.setSpacing(150);
+        introButtons.setSpacing(150.0);
         introButtons.getChildren().addAll(exit, submit);
         ipaddressWindow.setBottom(introButtons);
 
@@ -373,10 +381,35 @@ public class GUI extends Application {
         mainStage.setMinWidth(125.0);
         mainStage.setMinHeight(125.0);
 
-        Scene WindowScene = new Scene(windowBorder, 300, 150);
+        Scene WindowScene = new Scene(windowBorder, 300.0, 150.0);
         mainStage.setScene(WindowScene);
         mainStage.setTitle("Multiplayer Chess");
         mainStage.show();
+    }
+
+    private void initClient() {
+        // Initializes backend.
+
+        try {
+            this.client = new Client(addressField.getText(), this); // Creates back-end that connects to server
+
+            // Switches the windowBorder's (root) center to the game screen and alters the window size accordingly
+            windowBorder.setCenter(gameBorderContainer);
+            mainStage.setHeight(540.0);
+            mainStage.setMinHeight(540.0);
+            mainStage.setWidth(960.0);
+            mainStage.setMinWidth(960.0);
+            submitDisconnectButtons.setSpacing(337.0);
+            setInputDisable(true); // Initially, the controls are disabled, but once two players connect white will
+            // be able to make the first move.
+
+            new Thread(client).start(); // Creates a new and separate thread for the back-end that runs concurrently
+            // to the GUI thread AKA the holy grail in this spaghetti code mania.
+
+        } catch (Exception ignored) {
+            addressStatus.setFill(Color.RED);
+            addressStatus.setText("Could not connect");
+        }
     }
 
     private void writeToConsole() {
@@ -420,6 +453,7 @@ public class GUI extends Application {
                     ((Button) button).setText(
                             Character.toString(CLIcharToGUIchar.get(importantRows[GridPane.getRowIndex(button)][GridPane.getColumnIndex(button)].charAt(0)))
                     );
+                    button.setAccessibleText(((Button) button).getText());
                 }
             }
         }

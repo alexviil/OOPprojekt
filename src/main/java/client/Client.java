@@ -131,7 +131,7 @@ public class Client implements Runnable {
         try {
             output.write("MSG " + msg + "\n");
             output.flush();
-            gui.writeToConsole(new SimpleDateFormat("HH:mm:ss").format(new Date()) + " - You: " + msg + "\n");
+            gui.writeToConsole(new SimpleDateFormat("HH:mm:ss").format(new Date()) + " - You: " + msg);
         } catch (IOException e) {
             gui.writeToConsole(new SimpleDateFormat("HH:mm:ss").format(new Date()) + " - CLIENT: Failed to send message.");
         }
