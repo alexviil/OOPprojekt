@@ -108,6 +108,21 @@ public class ClientCLI {
         // Simple main method to ask the user for an IP-address, create a new ClientCLI to connect to that address and
         // initialize client.
 
+        System.out.println(
+                " _  _   _____     _____ _    _ ______  _____ _____ \n" +
+                "| || | |  __ \\ * / ____| |  | |  ____|/ ____/ ____|\n" +
+                "| || |_| |  | | | |    | |__| | |__  | (___| (___  \n" +
+                "|__   _| |  | | | |    |  __  |  __|  \\___ \\\\___ \\ \n" +
+                "   | | | |__| | | |____| |  | | |____ ____) |___) |\n" +
+                "   |_| |_____/   \\_____|_|  |_|______|_____/_____/ \n" +
+                "      _____ _      _____ ______ _   _ _______ \n" +
+                "     / ____| |    |_   _|  ____| \\ | |__   __|\n" +
+                "    | |    | |      | | | |__  |  \\| |  | |   \n" +
+                "    | |    | |      | | |  __| | . ` |  | |   \n" +
+                "    | |____| |____ _| |_| |____| |\\  |  | |   \n" +
+                "     \\_____|______|_____|______|_| \\_|  |_|   \n\n" +
+                "* Disclaimer: Not four-dimensional. Each player\nhas a two dimensional board, 2 + 2 = 4 dimensions.\n\n");
+
         System.out.print("Enter IP-address: ");
         new ClientCLI(new Scanner(System.in).nextLine()).init();
     }

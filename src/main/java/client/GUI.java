@@ -405,10 +405,10 @@ import java.util.concurrent.atomic.AtomicReference;
             mainStage.setMinWidth(960.0);
             submitDisconnectButtons.setSpacing(337.0);
             setInputDisable(true); // Initially, the controls are disabled, but once two players connect white will
-            // be able to make the first move.
+                                   // be able to make the first move.
 
             new Thread(client).start(); // Creates a new and separate thread for the back-end that runs concurrently
-            // to the GUI thread AKA the holy grail in this spaghetti code mania.
+                                        // to the GUI thread AKA the holy grail in this spaghetti code mania.
 
         } catch (Exception ignored) {
             addressStatus.setFill(Color.RED);

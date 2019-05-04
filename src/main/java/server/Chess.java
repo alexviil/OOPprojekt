@@ -1,5 +1,8 @@
 package server;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 public class Chess {
     Player currentPlayer;
     private Board gamefield;
@@ -25,7 +28,7 @@ public class Chess {
             for (int[] move : gamefield.everyBlackAllMoves(gamefield.getBoard())) {
                 win = checkMoveExistence(move[0], move[1]);
                 if (!win) {
-                    System.out.println(move[0]+ " " +move[1]);
+                    //System.out.println(move[0]+ " " +move[1]);
                     break;
                 }
             }
@@ -33,7 +36,7 @@ public class Chess {
             for (int[] move : gamefield.everyWhiteAllMoves(gamefield.getBoard())) {
                 win = checkMoveExistence(move[0], move[1]);
                 if (!win) {
-                    System.out.println(move[0]+ " " +move[1] + "     " + move[2] + " " + move[3]);
+                    //System.out.println(move[0]+ " " +move[1] + "     " + move[2] + " " + move[3]);
                     break;
                 }
             }
@@ -58,8 +61,10 @@ public class Chess {
         }else if (checkCastling(origX, origY, destX, destY)!=0) {
             castle(origX, origY, destX, destY, checkCastling(origX, origY, destX, destY));
             return true;
-        }else if (!gamefield.getBoard()[origX][origY].getCurrentPiece().checkMoveLegality(destX, destY, gamefield)) {
-            System.out.println(new java.sql.Timestamp(System.currentTimeMillis()) + " Move was illegal!");
+        }else if (!gamefield.getBoard()[origX][origY].getCurrentPiece().checkMoveLegality(destX, destY, gamefield, false)) {
+            System.out.println(new SimpleDateFormat("HH:mm:ss").format(new Date()) + " Illegal move attempt by player "
+                    + (currentPlayer.isWhite() ? "White" : "Black") + " from " + Player.numberToLetter(origX) + (origY + 1)
+                    + " to " + Player.numberToLetter(destX) + (destY + 1) + ".");
             return false;
         } else {
             simpleMovePiece(origX, origY, destX, destY);
@@ -197,7 +202,7 @@ public class Chess {
 
     private boolean checkMoveExistence(int x, int y) {
         for (int[] elem : gamefield.getBoard()[x][y].getCurrentPiece().allPossibleMoves(gamefield.getBoard())) {
-            if (gamefield.getBoard()[x][y].getCurrentPiece().checkMoveLegality(elem[2], elem[3], gamefield)) {
+            if (gamefield.getBoard()[x][y].getCurrentPiece().checkMoveLegality(elem[2], elem[3], gamefield, true)) {
                 return false;
             }
         }

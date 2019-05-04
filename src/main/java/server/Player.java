@@ -7,24 +7,29 @@ package server;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Scanner;
 
 public class Player implements Runnable {
     private Scanner input;
     private PrintWriter output;
     private Socket socket;
+    private String IPAddress;
+
     private boolean isWhite;
     Player opponent;
     private Chess chess;
 
-    Player(boolean isWhite, Socket socket, Chess chess) {
+    Player(boolean isWhite, Socket socket, Chess chess, String IPAddress) {
         // Constructor used by Server.
 
         this.isWhite = isWhite;
         this.socket = socket;
         this.chess = chess;
+        this.IPAddress = IPAddress;
     }
 
     private void setup() throws IOException {
@@ -35,11 +40,12 @@ public class Player implements Runnable {
         output = new PrintWriter(socket.getOutputStream(), true);
         output.println(isWhite ? "w" : "b");
         if (isWhite) {
-            System.out.println(new java.sql.Timestamp(System.currentTimeMillis()) + " White connected");
+            System.out.println(new SimpleDateFormat("HH:mm:ss").format(new Date()) + " White connected from " + IPAddress + ".");
             chess.setCurrentPlayer(this);
             output.println("MSG Waiting for other client...");
         } else {
-            System.out.println(new java.sql.Timestamp(System.currentTimeMillis()) + " Black connected");
+            System.out.println(new SimpleDateFormat("HH:mm:ss").format(new Date()) + " Black connected from " + IPAddress + ".");
+            System.out.println(new SimpleDateFormat("HH:mm:ss").format(new Date()) + " <--- GAME COMMENCEMENT TIME");
             opponent = chess.getCurrentPlayer();
             opponent.opponent = this;
             opponent.output.println(chess);
@@ -67,7 +73,7 @@ public class Player implements Runnable {
             try {
                 socket.close();
             } catch (IOException e){
-                e.printStackTrace();
+                System.err.print(e.getMessage());
             }
         }
     }
@@ -80,24 +86,24 @@ public class Player implements Runnable {
         while (input.hasNextLine()) {
             String event = input.nextLine();
             if (event.equals("QUIT")) {
-                System.out.println(new java.sql.Timestamp(System.currentTimeMillis()) + " Player " + this + " Connection terminated");
+                System.out.println(new SimpleDateFormat("HH:mm:ss").format(new Date()) + " Player " + this + " Connection terminated");
                 return;
             } else if (event.startsWith("VM")) { // VM a,x to b,y
                 try {
                     int[] numbers = getNumbers(event);
-                    System.out.println(Arrays.toString(numbers));
                     int origY = numbers[0];
                     int origX = numbers[1] - 1;
                     int destY = numbers[2];
                     int destX = numbers[3] - 1;
                     processMove(origX, origY, destX, destY);
                 } catch (ArrayIndexOutOfBoundsException | StringIndexOutOfBoundsException | NullPointerException e) {
-                    e.printStackTrace();
                     output.println("OB"); // Out of bounds
                 }
             } else if (event.startsWith("MSG")) {
                 opponent.output.println("PMSGR" + event.substring(4)); // Player Message Received
                 output.println("PMSGS" + event.substring(4)); // Player Message Sent
+                System.out.println(new SimpleDateFormat("HH:mm:ss").format(new Date()) + " Message from player "
+                + (isWhite ? "White: \"" : "Black: \"") + event.substring(4) + "\".");
             } else if (event.startsWith("GM")) {
                 output.println(chess);
                 output.println("INIT"); // Required by ClientCLI so the client can resume their turn after GM query
@@ -118,6 +124,8 @@ public class Player implements Runnable {
                 output.println(chess);
                 opponent.output.println(chess);
                 if (chess.getWinner() == this) {
+                    System.out.println(new SimpleDateFormat("HH:mm:ss").format(new Date())
+                            + " Game ended! Victory by player " + (isWhite ? "White!" : "Black!"));
                     output.println("VCT"); // Victory
                     opponent.output.println("DFT " + numberToLetter(origY) + (origX + 1) + " to " + numberToLetter(destY) + (destX + 1) + chess); // Defeat
                 }
@@ -127,7 +135,7 @@ public class Player implements Runnable {
                 output.println("IM"); // Invalid/Illegal move
             }
         } catch (IllegalStateException e) {
-            output.println(e.getMessage());
+            System.err.print(e.getMessage());
         }
     }
 
@@ -139,7 +147,7 @@ public class Player implements Runnable {
         return isWhite;
     }
 
-    private String numberToLetter(int i) {
+    static String numberToLetter(int i) {
         return new String[]{"A", "B", "C", "D", "E", "F", "G", "H"}[i];
     }
 

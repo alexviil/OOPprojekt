@@ -1,7 +1,9 @@
 package server;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 
 public abstract class Piece {
     private int color; // 0 is black, 1 is white
@@ -15,7 +17,7 @@ public abstract class Piece {
         this.pos = pos;
     }
 
-    public boolean checkMoveLegality(int xEnd, int yEnd, Board board) {
+    public boolean checkMoveLegality(int xEnd, int yEnd, Board board, boolean existenceCheck) {
         boolean legal = false;
 
         for (int[] el:this.allPossibleMoves(board.getBoard())) { // checks if move is otherwise possible for that piece
@@ -26,7 +28,12 @@ public abstract class Piece {
         }
 
         if (legal) {
-            System.out.println(new java.sql.Timestamp(System.currentTimeMillis()) + " Move was otherwise legal!");
+            if (!existenceCheck) {
+                System.out.print(new SimpleDateFormat("HH:mm:ss").format(new Date())
+                        + " Legal move request by player " + (color == 1 ? "White" : "Black") + " from "
+                        + Player.numberToLetter(pos[0]) + (pos[1] + 1) + " to " + Player.numberToLetter(xEnd)
+                        + (yEnd + 1) + ".");
+            }
             ArrayList<int[]> allEnemyMoves;
             int[] kingPos;
 
@@ -46,11 +53,12 @@ public abstract class Piece {
             for (int[] el : allEnemyMoves) { // checks if any enemy piece is attacking the king piece
                 if (Arrays.equals(new int[]{el[2], el[3]}, kingPos)) {
                     legal = false;
-                    System.out.println(new java.sql.Timestamp(System.currentTimeMillis()) + " Move keeps or puts the king in danger!");
+                    if (!existenceCheck) { System.out.print(" But move keeps or puts the king in danger! --->>> "); }
                     break;
                 }
             }
         }
+        if (!existenceCheck && legal) { System.out.println(" Piece moved."); }
         return legal;
     }
 
@@ -156,7 +164,7 @@ public abstract class Piece {
 
     public void setColor(int color) {
         this.color = color;
-    }
+    } // FIXME unused method
 
     public void setPos(int[] pos) {
         this.pos = pos;
