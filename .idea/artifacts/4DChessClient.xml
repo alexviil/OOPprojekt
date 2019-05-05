@@ -1,0 +1,29 @@
+<component name="ArtifactManager">
+  <artifact type="javafx" name="4DChessClient">
+    <output-path>$PROJECT_DIR$/out/artifacts/4DChessClient</output-path>
+    <properties id="javafx-properties">
+      <options>
+        <option name="appClass" value="client.GUI" />
+        <option name="description" value="" />
+        <option name="height" value="125" />
+        <option name="htmlPlaceholderId" value="" />
+        <option name="icons">
+          <JavaFxApplicationIcons>
+            <option name="linuxIcon" value="$PROJECT_DIR$/src/main/resources/ico.png" />
+            <option name="macIcon" value="$PROJECT_DIR$/src/main/resources/ico.icns" />
+            <option name="windowsIcon" value="$PROJECT_DIR$/src/main/resources/ico.ico" />
+          </JavaFxApplicationIcons>
+        </option>
+        <option name="title" value="4D Chess Client" />
+        <option name="vendor" value="Alex Viil &amp; Janar Aava" />
+        <option name="version" value="1.0" />
+        <option name="width" value="125" />
+      </options>
+    </properties>
+    <root id="root">
+      <element id="archive" name="OOPprojekt_main.jar">
+        <element id="module-output" name="OOPprojekt.main" />
+      </element>
+    </root>
+  </artifact>
+</component>

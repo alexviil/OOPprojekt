@@ -7,6 +7,12 @@ repositories {
     mavenCentral()
 }
 
+dependencies { // Includes JavaFX graphics for each major OS
+    runtimeOnly "org.openjfx:javafx-graphics:$javafx.version:win"
+    runtimeOnly "org.openjfx:javafx-graphics:$javafx.version:linux"
+    runtimeOnly "org.openjfx:javafx-graphics:$javafx.version:mac"
+}
+
 sourceCompatibility = 12
 compileJava.options.encoding = 'UTF-8'
 compileTestJava.options.encoding = 'UTF-8'
@@ -16,5 +22,23 @@ application {
 }
 
 javafx {
-    modules = ['javafx.controls', 'javafx.fxml']
+    version = "12"
+    modules = [ 'javafx.controls', 'javafx.fxml' ]
+}
+
+mainClassName = 'client.GUI'
+
+jar {
+    // Makes a runnable .jar for the gui.
+    // After running, build/libs will contain the .jar
+    // Be sure to delete client_OLD and server from the archive if needed (use 7-zip or something),
+    // since they aren't neccessary for the GUI to run
+    destinationDir = file('/')
+    manifest {
+        attributes 'Main-Class': 'client.ClientLauncher'
+    }
+    baseName = '4DChessClient'
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
 }

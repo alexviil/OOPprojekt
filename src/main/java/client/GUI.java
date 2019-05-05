@@ -151,6 +151,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
@@ -388,6 +389,7 @@ import java.util.concurrent.atomic.AtomicReference;
         Scene WindowScene = new Scene(windowBorder, 300.0, 150.0);
         mainStage.setScene(WindowScene);
         mainStage.setTitle("Multiplayer Chess");
+        mainStage.getIcons().add(new Image("ico.png"));
         mainStage.show();
     }
 
