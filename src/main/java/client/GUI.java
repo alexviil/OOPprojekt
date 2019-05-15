@@ -250,6 +250,11 @@ import java.util.concurrent.atomic.AtomicReference;
         saveButton.setMinWidth(38.0);
         saveButton.setOnMouseClicked(me -> {
             FileChooser fc = new FileChooser();
+            File userDir = new File(System.getProperty("user.dir"));
+            if(!userDir.canRead()) {
+                userDir = new File("c:/");
+            }
+            fc.setInitialDirectory(userDir);
             fc.getExtensionFilters().addAll(
                     new FileChooser.ExtensionFilter("Text Files", "*.txt")
             );
