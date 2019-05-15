@@ -20,12 +20,14 @@ public class Player implements Runnable {
     private String IPAddress;
 
     private boolean isWhite;
+    private boolean playerOrder; //True if white first, False if black first
     Player opponent;
     private Chess chess;
 
-    Player(boolean isWhite, Socket socket, Chess chess, String IPAddress) {
+    Player(boolean playerOrder, boolean isWhite, Socket socket, Chess chess, String IPAddress) {
         // Constructor used by Server.
 
+        this.playerOrder=playerOrder;
         this.isWhite = isWhite;
         this.socket = socket;
         this.chess = chess;
@@ -39,20 +41,38 @@ public class Player implements Runnable {
         input = new Scanner(socket.getInputStream());
         output = new PrintWriter(socket.getOutputStream(), true);
         output.println(isWhite ? "w" : "b");
-        if (isWhite) {
-            System.out.println(new SimpleDateFormat("HH:mm:ss").format(new Date()) + " White connected from " + IPAddress + ".");
-            chess.setCurrentPlayer(this);
-            output.println("MSG Waiting for other client...");
+        if (this.playerOrder) {
+            if (isWhite) {
+                System.out.println(new SimpleDateFormat("HH:mm:ss").format(new Date()) + " White connected from " + IPAddress + ".");
+                chess.setCurrentPlayer(this);
+                output.println("MSG Waiting for other client...");
+            } else {
+                System.out.println(new SimpleDateFormat("HH:mm:ss").format(new Date()) + " Black connected from " + IPAddress + ".");
+                System.out.println(new SimpleDateFormat("HH:mm:ss").format(new Date()) + " <--- GAME COMMENCEMENT TIME");
+                opponent = chess.getCurrentPlayer();
+                opponent.opponent = this;
+                opponent.output.println(chess);
+                output.println(chess);
+                output.println("MSG Opponent starts first. ");
+                opponent.output.println("MSG Opponent connected. You start first.");
+                opponent.output.println("INIT");
+            }
         } else {
-            System.out.println(new SimpleDateFormat("HH:mm:ss").format(new Date()) + " Black connected from " + IPAddress + ".");
-            System.out.println(new SimpleDateFormat("HH:mm:ss").format(new Date()) + " <--- GAME COMMENCEMENT TIME");
-            opponent = chess.getCurrentPlayer();
-            opponent.opponent = this;
-            opponent.output.println(chess);
-            output.println(chess);
-            output.println("MSG Opponent starts first. ");
-            opponent.output.println("MSG Opponent connected. You start first.");
-            opponent.output.println("INIT");
+            if (!isWhite) {
+                System.out.println(new SimpleDateFormat("HH:mm:ss").format(new Date()) + " Black connected from " + IPAddress + ".");
+                chess.setCurrentPlayer(this);
+                output.println("MSG Waiting for other client...");
+            } else {
+                System.out.println(new SimpleDateFormat("HH:mm:ss").format(new Date()) + " White connected from " + IPAddress + ".");
+                System.out.println(new SimpleDateFormat("HH:mm:ss").format(new Date()) + " <--- GAME COMMENCEMENT TIME");
+                opponent = chess.getCurrentPlayer();
+                opponent.opponent = this;
+                opponent.output.println(chess);
+                output.println(chess);
+                output.println("MSG Opponent starts first. ");
+                opponent.output.println("MSG Opponent connected. You start first.");
+                opponent.output.println("INIT");
+            }
         }
     }
 

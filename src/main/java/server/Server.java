@@ -34,11 +34,13 @@ public class Server {
         try (ServerSocket listener = new ServerSocket(59059)) {
             ExecutorService threadPool = Executors.newFixedThreadPool(1000); // amount of actions between clients IIRC
             Chess chess;
+            String turnColor = "w";
             if (args.length==0) {
                 chess = new Chess(new Board());
             } else {
                 BufferedReader br = new BufferedReader(new FileReader(args[0]));
-                String line = br.readLine();
+                turnColor = br.readLine(); // First line is color
+                String line = br.readLine(); // Second line is board
                 br.close();
 
                 Board cb = new Board();
@@ -51,7 +53,7 @@ public class Server {
                         rows[10].substring(5, 34).split(" \\| "), rows[12].substring(5, 34).split(" \\| "),
                         rows[14].substring(5, 34).split(" \\| "), rows[16].substring(5, 34).split(" \\| ")
                 };
-                for (int col=0; col<importantRows.length; col++) {
+                for (int col=0; col<importantRows.length; col++) { // tolgendab sone failist ümber Boardile sobivaks Tile arrayks.
                     for (int row=0; row<importantRows.length; row++) {
                         String piece = importantRows[col][row];
                         if (piece.equals("B")) {
@@ -88,9 +90,16 @@ public class Server {
             }
 
             System.out.println(new SimpleDateFormat("HH:mm:ss").format(new Date()) + " Server running, accepting connections...");
-            while (true) {
-                threadPool.execute(new Player(true, listener.accept(), chess, listener.getInetAddress().getHostAddress()));
-                threadPool.execute(new Player(false, listener.accept(), chess, listener.getInetAddress().getHostAddress()));
+            if (turnColor.equals("w")) { // jarjekorra maaramiseks
+                while (true) {
+                    threadPool.execute(new Player(true, true, listener.accept(), chess, listener.getInetAddress().getHostAddress()));
+                    threadPool.execute(new Player(true,false, listener.accept(), chess, listener.getInetAddress().getHostAddress()));
+                }
+            } else {
+                while (true) {
+                    threadPool.execute(new Player(false,false, listener.accept(), chess, listener.getInetAddress().getHostAddress()));
+                    threadPool.execute(new Player(false,true, listener.accept(), chess, listener.getInetAddress().getHostAddress()));
+                }
             }
         }
     }

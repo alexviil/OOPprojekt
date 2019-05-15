@@ -16,6 +16,8 @@ public class Client implements Runnable {
     private BufferedReader input;
     private BufferedWriter output;
     private GUI gui;
+    private String color;
+    private boolean inputEnabled;
 
     private String lastUpdate; // Saves the game state, so the GUI (JavaFX) thread can use it to update the game state
                                // after JavaFX is done redrawing the GUI.
@@ -45,22 +47,29 @@ public class Client implements Runnable {
                     } else if (line.startsWith("VM")) {
                         gui.writeToConsole(new SimpleDateFormat("HH:mm:ss").format(new Date()) + " - SERVER: Valid move!");
                         gui.setInputDisable(true);
+                        this.inputEnabled = true;
+                        autoSaveGameState();
 
                     } else if (line.startsWith("OPM")) {
                         gui.writeToConsole(new SimpleDateFormat("HH:mm:ss").format(new Date()) + " - SERVER: Opponent moved piece " + line.substring(4, 12) + ".");
                         gui.setInputDisable(false);
+                        this.inputEnabled = false;
+                        autoSaveGameState();
 
                     } else if (line.startsWith("IM")) {
                         gui.writeToConsole(new SimpleDateFormat("HH:mm:ss").format(new Date()) + " - SERVER: Invalid move, try again.");
                         gui.setInputDisable(false);
+                        this.inputEnabled = false;
 
                     } else if (line.startsWith("UC")) {
                         gui.writeToConsole(new SimpleDateFormat("HH:mm:ss").format(new Date()) + " - SERVER: Unrecognized command! you shouldn't be seeing this in the GUI :^)");
                         gui.setInputDisable(false);
+                        this.inputEnabled = false;
 
                     } else if (line.startsWith("OB")) {
                         gui.writeToConsole(new SimpleDateFormat("HH:mm:ss").format(new Date()) + " - SERVER: Move out of bounds, try again.");
                         gui.setInputDisable(false);
+                        this.inputEnabled = false;
 
                     } else if (line.startsWith("GM")) {
                         // Current gamestate. Gets saved into a separate variable (as line might get overwritten) and
@@ -73,44 +82,43 @@ public class Client implements Runnable {
                         // attributes). It might take too long, resulting in the JavaFX thread getting blocked.
 
                         lastUpdate = line.substring(3);
-
-                        // Auto-save
-                        try{
-                            FileWriter fw=new FileWriter("save.txt");
-                            fw.write(lastUpdate);
-                            fw.close();
-                        }catch(Exception e){System.out.println(e);}
-
                         Platform.runLater(() -> gui.updateGamefield(lastUpdate));
 
                     } else if (line.equals("VCT")) {
                         gui.writeToConsole(new SimpleDateFormat("HH:mm:ss").format(new Date()) + " - SERVER: You WON!");
                         gui.setInputDisable(true);
+                        this.inputEnabled = true;
                         break;
 
                     } else if (line.startsWith("DFT")) {
                         gui.writeToConsole(new SimpleDateFormat("HH:mm:ss").format(new Date()) + " - SERVER: Opponent moved piece " + line.substring(4, 12) + ".");
                         gui.writeToConsole(new SimpleDateFormat("HH:mm:ss").format(new Date()) + " - SERVER: You LOST...");
                         gui.setInputDisable(true);
+                        this.inputEnabled = true;
                         break;
 
                     } else if (line.equals("TIE")) {
                         gui.writeToConsole(new SimpleDateFormat("HH:mm:ss").format(new Date()) + " - SERVER: It's a TIE.");
                         gui.setInputDisable(true);
+                        this.inputEnabled = true;
                         break;
 
                     } else if (line.equals("OCPT")) {
                         gui.writeToConsole(new SimpleDateFormat("HH:mm:ss").format(new Date()) + " - SERVER: Other client process terminated.");
                         gui.setInputDisable(true);
+                        this.inputEnabled = true;
                         break;
 
                     } else if (line.equals("INIT")) { // "INIT" gets sent to player white so that they may play first
                         gui.setInputDisable(false);
+                        this.inputEnabled = false;
 
                     } else if (line.equals("w")) {
+                        this.color = "w";
                         gui.writeToConsole(new SimpleDateFormat("HH:mm:ss").format(new Date()) + " - SERVER: You are player color: WHITE (bottom).");
 
                     } else if (line.equals("b")) {
+                        this.color = "b";
                         gui.writeToConsole(new SimpleDateFormat("HH:mm:ss").format(new Date()) + " - SERVER: You are player color: BLACK (top).");
 
                     }
@@ -147,13 +155,31 @@ public class Client implements Runnable {
 
     void saveGameState(File file) {
         try {
-            PrintWriter writer;
-            writer = new PrintWriter(file);
+            PrintWriter writer = new PrintWriter(file);
+            if (this.color.equals("w") && this.inputEnabled || this.color.equals("b") && !this.inputEnabled) {
+                writer.println("b");
+            } else {
+                writer.println("w");
+            }
             writer.println(lastUpdate);
             writer.close();
             gui.writeToConsole(new SimpleDateFormat("HH:mm:ss").format(new Date()) + " - CLIENT: File is saved.");
         } catch (IOException ex) {
             gui.writeToConsole(new SimpleDateFormat("HH:mm:ss").format(new Date()) + " - CLIENT: Failed to save file.");
         }
+    }
+
+    void autoSaveGameState() {
+        // Auto-save
+        try{
+            PrintWriter writer = new PrintWriter(new File("src/main/java/save.txt"));
+            if (this.color.equals("w") && this.inputEnabled || this.color.equals("b") && !this.inputEnabled) {
+                writer.println("b");
+            } else {
+                writer.println("w");
+            }
+            writer.println(lastUpdate);
+            writer.close();
+        }catch(Exception e){System.out.println(e);}
     }
 }
