@@ -31,3 +31,9 @@ Edasised käsud tuleb jooksutada *cmd.exe* abil kaustast, kus asuvad eelnevalt n
 * Käsurea klient:
     * kompileerimine `javac -encoding UTF-8 client_OLD/ClientCLI.java`.
     * jooksutamine `java client_OLD/ClientCLI`.
+
+### Salvestamine ja salvestuse laadimine
+
+Programm salvestab automaatselt peale igat käiku ning on võimalik ka käsitsi salvestada kasutades kasutajaliideses vastavat nuppu.
+Salvestatud fail on tavaline tekstifail, mille laadimiseks peab serveri käivitamisel käsureal kaasa andma salvestatud faili asukoha.
+Näiteks: `java server/Server save.txt`
