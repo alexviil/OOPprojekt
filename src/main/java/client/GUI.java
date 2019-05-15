@@ -421,7 +421,7 @@ import java.util.concurrent.atomic.AtomicReference;
             mainStage.setMinHeight(540.0);
             mainStage.setWidth(960.0);
             mainStage.setMinWidth(960.0);
-            submitDisconnectButtons.setSpacing(337.0);
+            submitDisconnectButtons.setSpacing(150.0);
             setInputDisable(true); // Initially, the controls are disabled, but once two players connect white will
                                    // be able to make the first move.
 
