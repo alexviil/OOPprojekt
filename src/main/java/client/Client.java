@@ -73,6 +73,13 @@ public class Client implements Runnable {
                         // attributes). It might take too long, resulting in the JavaFX thread getting blocked.
 
                         lastUpdate = line.substring(3);
+
+                        try{
+                            FileWriter fw=new FileWriter("save.txt");
+                            fw.write(lastUpdate);
+                            fw.close();
+                        }catch(Exception e){System.out.println(e);}
+
                         Platform.runLater(() -> gui.updateGamefield(lastUpdate));
 
                     } else if (line.equals("VCT")) {

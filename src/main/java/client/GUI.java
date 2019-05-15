@@ -148,21 +148,24 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.nio.file.Files;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Scanner;
 import java.util.concurrent.atomic.AtomicReference;
 
  public class GUI extends Application {
@@ -339,12 +342,29 @@ import java.util.concurrent.atomic.AtomicReference;
         ipaddressWindow.setTop(addressStatus);
 
 
-        // Submit/Exit buttons
+        // Submit/Exit/Load buttons
 
         Button exit = new Button("Quit");
         exit.setMinWidth(38.0); // Text won't disappear on resize.
         exit.setOnMouseClicked(me -> System.exit(0));
 
+        FileChooser fileChooser = new FileChooser();
+        Button load = new Button("Load");
+        load.setMinWidth(38.0); // Text won't disappear on resize.
+        load.setOnMouseClicked(me -> {
+            File file = fileChooser.showOpenDialog(mainStage);
+            fileChooser.getExtensionFilters().addAll(
+                    new FileChooser.ExtensionFilter("Text Files", "*.txt")
+            );
+            try {
+                Scanner sc = new Scanner(file);
+                String gamestate = sc.nextLine();
+                updateGamefield(gamestate);
+            } catch (FileNotFoundException e) {
+                Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Faili ei leitud.", ButtonType.CANCEL);
+                alert.showAndWait();
+            }
+        });
 
         Button submit = new Button("Submit");
         submit.setMinWidth(55.0); // Text won't disappear on resize.
@@ -358,7 +378,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
         HBox introButtons = new HBox();
         introButtons.setSpacing(150.0);
-        introButtons.getChildren().addAll(exit, submit);
+        introButtons.getChildren().addAll(load, submit);
         ipaddressWindow.setBottom(introButtons);
 
 
