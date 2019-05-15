@@ -8,7 +8,7 @@ public class Chess {
     private Board gamefield;
     private int[] lastMove = new int[]{-1,-1,-1,-1};
 
-    public Chess() {
+    public Chess(Board board) {
 //        gamefield = new char[][]{
 //                {'R', 'K', 'B', 'Q', 'C', 'B', 'K', 'R'}, // R - Rook, K - Knight, B - Bishop, Q - Queen, C - King,
 //                {'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'}, // P - Pawn.
@@ -18,7 +18,7 @@ public class Chess {
 //                {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
 //                {'p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'},
 //                {'r', 'k', 'b', 'q', 'c', 'b', 'k', 'r'}};
-        gamefield = new Board();
+        gamefield = board;
     }
 
     public Player getWinner() {

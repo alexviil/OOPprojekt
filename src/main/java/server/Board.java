@@ -124,31 +124,31 @@ public class Board {
         return copy;
     }
 
-    private Tile createPawnTile(int color, int x, int y) {
+    public Tile createPawnTile(int color, int x, int y) {
         return new Tile(new Pawn(color, new int[]{x, y}), new int[]{x, y});
     }
 
-    private Tile createRookTile(int color, int x, int y) {
+    public Tile createRookTile(int color, int x, int y) {
         return new Tile(new Rook(color, new int[]{x, y}), new int[]{x, y});
     }
 
-    private Tile createKnightTile(int color, int x, int y) {
+    public Tile createKnightTile(int color, int x, int y) {
         return new Tile(new Knight(color, new int[]{x, y}), new int[]{x, y});
     }
 
-    private Tile createBishopTile(int color, int x, int y) {
+    public Tile createBishopTile(int color, int x, int y) {
         return new Tile(new Bishop(color, new int[]{x, y}), new int[]{x, y});
     }
 
-    private Tile createQueenTile(int color, int x, int y) {
+    public Tile createQueenTile(int color, int x, int y) {
         return new Tile(new Queen(color, new int[]{x, y}), new int[]{x, y});
     }
 
-    private Tile createKingTile(int color, int x, int y) {
+    public Tile createKingTile(int color, int x, int y) {
         return new Tile(new King(color, new int[]{x, y}), new int[]{x, y});
     }
 
-    private Tile createEmptyTile(int x, int y) {
+    public Tile createEmptyTile(int x, int y) {
         return new Tile(null, new int[]{x, y});
     }
 
@@ -167,5 +167,9 @@ public class Board {
         }
         sb.append("+    A   B   C   D   E   F   G   H    +");
         return sb.toString();
+    }
+
+    public void setBoard(Tile[][] board) {
+        this.board = board;
     }
 }

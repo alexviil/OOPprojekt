@@ -74,6 +74,7 @@ public class Client implements Runnable {
 
                         lastUpdate = line.substring(3);
 
+                        // Auto-save
                         try{
                             FileWriter fw=new FileWriter("save.txt");
                             fw.write(lastUpdate);
@@ -141,6 +142,18 @@ public class Client implements Runnable {
             gui.writeToConsole(new SimpleDateFormat("HH:mm:ss").format(new Date()) + " - You: " + msg);
         } catch (IOException e) {
             gui.writeToConsole(new SimpleDateFormat("HH:mm:ss").format(new Date()) + " - CLIENT: Failed to send message.");
+        }
+    }
+
+    void saveGameState(File file) {
+        try {
+            PrintWriter writer;
+            writer = new PrintWriter(file);
+            writer.println(lastUpdate);
+            writer.close();
+            gui.writeToConsole(new SimpleDateFormat("HH:mm:ss").format(new Date()) + " - CLIENT: File is saved.");
+        } catch (IOException ex) {
+            gui.writeToConsole(new SimpleDateFormat("HH:mm:ss").format(new Date()) + " - CLIENT: Failed to save file.");
         }
     }
 }

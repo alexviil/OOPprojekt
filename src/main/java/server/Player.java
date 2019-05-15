@@ -179,4 +179,6 @@ public class Player implements Runnable {
     private int letterToNumber(char s) {
         return (int)s - 97;
     } // gives letter ASCII index - 97, so A starts at 0
+
+
 }

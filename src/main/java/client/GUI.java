@@ -175,6 +175,7 @@ import java.util.concurrent.atomic.AtomicReference;
     private TextField commandLine;
     private TextArea textConsole;
     private Client client;
+    private String gamestate;
     // initClient
     private TextField addressField;
     private BorderPane windowBorder;
@@ -245,11 +246,24 @@ import java.util.concurrent.atomic.AtomicReference;
             }
         });
 
+        Button saveButton = new Button("Save");
+        saveButton.setMinWidth(38.0);
+        saveButton.setOnMouseClicked(me -> {
+            FileChooser fc = new FileChooser();
+            fc.getExtensionFilters().addAll(
+                    new FileChooser.ExtensionFilter("Text Files", "*.txt")
+            );
+            File file = fc.showSaveDialog(mainStage);
+            if (file!=null) {
+                client.saveGameState(file);
+            }
+        });
+
         Button disconnectButton = new Button("Disconnect");
         disconnectButton.setMinWidth(85.0); // Text won't disappear on resize.
         disconnectButton.setOnMouseClicked(me -> System.exit(0));
 
-        submitDisconnectButtons.getChildren().addAll(submitButton, disconnectButton);
+        submitDisconnectButtons.getChildren().addAll(submitButton, saveButton, disconnectButton);
         commandLineAndButtons.getChildren().addAll(commandLine, submitDisconnectButtons);
 
         console.setCenter(textConsole);
@@ -348,24 +362,6 @@ import java.util.concurrent.atomic.AtomicReference;
         exit.setMinWidth(38.0); // Text won't disappear on resize.
         exit.setOnMouseClicked(me -> System.exit(0));
 
-        FileChooser fileChooser = new FileChooser();
-        Button load = new Button("Load");
-        load.setMinWidth(38.0); // Text won't disappear on resize.
-        load.setOnMouseClicked(me -> {
-            File file = fileChooser.showOpenDialog(mainStage);
-            fileChooser.getExtensionFilters().addAll(
-                    new FileChooser.ExtensionFilter("Text Files", "*.txt")
-            );
-            try {
-                Scanner sc = new Scanner(file);
-                String gamestate = sc.nextLine();
-                updateGamefield(gamestate);
-            } catch (FileNotFoundException e) {
-                Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Faili ei leitud.", ButtonType.CANCEL);
-                alert.showAndWait();
-            }
-        });
-
         Button submit = new Button("Submit");
         submit.setMinWidth(55.0); // Text won't disappear on resize.
         submit.setOnMouseClicked(me -> initClient());
@@ -378,7 +374,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
         HBox introButtons = new HBox();
         introButtons.setSpacing(150.0);
-        introButtons.getChildren().addAll(load, submit);
+        introButtons.getChildren().addAll(exit, submit);
         ipaddressWindow.setBottom(introButtons);
 
 
@@ -389,7 +385,7 @@ import java.util.concurrent.atomic.AtomicReference;
             marginLeft.setWidth(newWidth.doubleValue() / 12.0);
             marginRight.setWidth(newWidth.doubleValue() / 12.0);
             introButtons.setSpacing(newWidth.doubleValue() - marginLeft.getWidth() - marginRight.getWidth() - submit.getWidth() - exit.getWidth());
-            submitDisconnectButtons.setSpacing(commandLine.getWidth() - submitButton.getWidth() - disconnectButton.getWidth());
+            submitDisconnectButtons.setSpacing((commandLine.getWidth() - submitButton.getWidth() - saveButton.getWidth() - disconnectButton.getWidth())/3);
             gameBorder.setScaleX(newWidth.doubleValue() / 800.0);
             });
 
