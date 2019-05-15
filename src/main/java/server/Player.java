@@ -138,7 +138,11 @@ public class Player implements Runnable {
         // state and tells the opponent to play.
 
         try {
-            if (!isWhite && chess.isPieceWhite(origX, origY) || isWhite && !chess.isPieceWhite(origX, origY)){
+            if (chess.checkTie()) {
+                output.println("TIE");
+                opponent.output.println("TIE");
+            }
+            else if (!isWhite && chess.isPieceWhite(origX, origY) || isWhite && !chess.isPieceWhite(origX, origY)){
                 output.println("IM");
             } else if (chess.movePiece(origX, origY, destX, destY)) {
                 output.println(chess);

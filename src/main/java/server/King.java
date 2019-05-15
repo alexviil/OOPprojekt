@@ -1,6 +1,7 @@
 package server;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class King extends Piece {
     public King(int color, int[] pos) {
@@ -23,6 +24,17 @@ public class King extends Piece {
             }
         }
         return possibleMoves;
+    }
+
+    public boolean checkKingAttack(ArrayList<int[]> allEnemyMoves) {
+        boolean underAttack = false;
+        for (int[] el : allEnemyMoves) { // checks if any enemy piece is attacking the king piece
+            if (Arrays.equals(new int[]{el[2], el[3]}, this.getPos())) {
+                underAttack = true;
+                break;
+            }
+        }
+        return underAttack;
     }
 
     @Override

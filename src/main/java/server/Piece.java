@@ -164,7 +164,7 @@ public abstract class Piece {
 
     public void setColor(int color) {
         this.color = color;
-    } // FIXME unused method
+    }
 
     public void setPos(int[] pos) {
         this.pos = pos;

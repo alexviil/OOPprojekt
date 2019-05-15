@@ -1,12 +1,16 @@
 package server;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 
 public class Chess {
     Player currentPlayer;
     private Board gamefield;
     private int[] lastMove = new int[]{-1,-1,-1,-1};
+    private ArrayList<String> boardStates = new ArrayList<>();
+    private int tieMoveCounter = 0;
 
     public Chess(Board board) {
 //        gamefield = new char[][]{
@@ -19,6 +23,64 @@ public class Chess {
 //                {'p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'},
 //                {'r', 'k', 'b', 'q', 'c', 'b', 'k', 'r'}};
         gamefield = board;
+    }
+
+    public boolean checkTie() {
+        boolean tie = false;
+        // Checks if enemy doesnt have any legal move with any piece and the king is not under attack
+        if (!currentPlayer.isWhite()) {
+            int[] kingpos = gamefield.findBlackKing(gamefield.boardCopy());
+            King king = (King) gamefield.getBoard()[kingpos[0]][kingpos[1]].getCurrentPiece();
+            for (int[] move : gamefield.everyBlackAllMoves(gamefield.getBoard())) {
+                if (!checkMoveExistence(move[0], move[1]) && king.checkKingAttack(gamefield.everyWhiteAllMoves(gamefield.getBoard()))) {
+                    tie = true;
+                    break;
+                }
+            }
+        } else {
+            int[] kingpos = gamefield.findWhiteKing(gamefield.boardCopy());
+            King king = (King) gamefield.getBoard()[kingpos[0]][kingpos[1]].getCurrentPiece();
+            for (int[] move : gamefield.everyWhiteAllMoves(gamefield.getBoard())) {
+                if (!checkMoveExistence(move[0], move[1]) && king.checkKingAttack(gamefield.everyBlackAllMoves(gamefield.getBoard()))) {
+                    tie = true;
+                    break;
+                }
+            }
+        }
+
+        // Checks if a position is repeated three times
+        if (Collections.frequency(this.boardStates, this.toString()) == 3) {
+            tie = true;
+        }
+
+        // Checks if there are enough pieces to win the game
+        int kingCounter = 0;
+        int knightCounter = 0;
+        int otherCounter = 0;
+        for (Tile[] tilearr:this.gamefield.getBoard()) {
+            for (Tile tile:tilearr) {
+                Piece piece = tile.getCurrentPiece();
+                if (piece instanceof King) {
+                    kingCounter++;
+                } else if (piece instanceof Knight) {
+                    knightCounter++;
+                } else if (piece==null) {
+                    continue;
+                } else {
+                    otherCounter++;
+                }
+            }
+        }
+        if(otherCounter==0 && kingCounter==2 && knightCounter<2) {
+            tie = true;
+        }
+
+        // checks if there have been 50 moves without a pawn moving or a capture.
+        if (tieMoveCounter>=50) {
+            tie = true;
+        }
+
+        return tie;
     }
 
     public Player getWinner() {
@@ -53,13 +115,18 @@ public class Chess {
         if (checkEnPassant(origX, origY, destX, destY)) {
             simpleMovePiece(origX, origY, destX, destY);
             gamefield.getBoard()[lastMove[2]][lastMove[3]].setCurrentPiece(null);
+            this.tieMoveCounter=0;
             return true;
         }else if (checkPromotion(origX, origY, destX, destY)) {
             gamefield.getBoard()[origX][origY].setCurrentPiece(null);
             gamefield.getBoard()[destX][destY].setCurrentPiece(new Queen(currentPlayer.isWhite() ? 1 : 0, new int[]{destX, destY}));
+            this.boardStates.add(this.toString());
+            this.tieMoveCounter=0;
             return true;
         }else if (checkCastling(origX, origY, destX, destY)!=0) {
             castle(origX, origY, destX, destY, checkCastling(origX, origY, destX, destY));
+            this.boardStates.add(this.toString());
+            this.tieMoveCounter++;
             return true;
         }else if (!gamefield.getBoard()[origX][origY].getCurrentPiece().checkMoveLegality(destX, destY, gamefield, false)) {
             System.out.println(new SimpleDateFormat("HH:mm:ss").format(new Date()) + " Illegal move attempt by player "
@@ -67,9 +134,15 @@ public class Chess {
                     + " to " + Player.numberToLetter(destX) + (destY + 1) + ".");
             return false;
         } else {
+            if (gamefield.getBoard()[origX][origY].getCurrentPiece() instanceof Pawn || gamefield.getBoard()[destX][destY].getCurrentPiece()!=null) {
+                this.tieMoveCounter=0;
+            } else {
+                this.tieMoveCounter++;
+            }
             simpleMovePiece(origX, origY, destX, destY);
             this.lastMove = new int[]{origX, origY, destX, destY};
             currentPlayer = currentPlayer.opponent;
+            this.boardStates.add(this.toString());
             return true;
         }
     }
